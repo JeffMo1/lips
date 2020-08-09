@@ -10,17 +10,21 @@ One string of 8-bit bytes, up to TBD bytes in length. Instructions contain a min
 LIPS has a number of registers that provide access to strip configurations (read-only), LED RGB data (read/write), animation metadata, and scrachpad data for the animation calculations. 
 
 _config_
+
 N - R/O - Number of LEDs in the strip 
 S - R/O - Strip identifier, usually sequential from 0 to one less than total number of strips
 
 _LED_
+
 L - R/W - LED index, read for current position, write to change position
 
 _anim_
+
 F - R/O - Frame counter, read for current frame, auto-incremented by interpreter
 V - R/W - Frame overflow, read for current value, write to change value, affects where frame counter will roll over to zero
 
--scratch_
+_scratch_
+
 I - R/W - Scratchpad index, read for current position, write to change position
 X - R/W - Scratchpad data, read for current data, write to change data
 
