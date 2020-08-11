@@ -32,14 +32,16 @@ _scratch_
 
 Code | Name | Parameters | Description
 ---- | ---- | ---------- | -----------
-*Z*  | Terminate frame | | Terminate current render frame and advance, using F and V registers
-*M*  | Move | target_reg, source_reg | Move the source_reg value into the target_reg
-*ML* | Move literal | target_reg, source_lit | Move the source_lit value into the target_reg
-*MI* | Move indexed | target_reg, source_idx | Move the X(source_idx) value into the target_reg
- 
-*W* - basis_register, comparison, compare_rov
+**Z**  | Terminate frame | | Terminate current render frame and advance, using F and V registers
+**M**  | Move | target_reg, source_reg | Move the source_reg value into the target_reg
+**ML** | Move literal | target_reg, source_lit | Move the source_lit value into the target_reg
+**MI** | Move scratchpad | target_reg | Move the scratchpad value (indexed by I) into the target_reg
+**MJ** | Move indexed | target_reg, source_idx | Move the scratchpad value (indexed by source_idx) into the target_reg
+**W**  | While | basis_reg, compare_reg | Loop while compare_reg != basis_reg (when equal, jump past corresponding E)
+**WL** | While literal | basis_lit, compare_reg | Loop while compare_reg != basis_lit
+**WI** | While scratchpad | compare_reg | Loop while compare_reg != scratchpad value (indexed by I)
+**WJ** | While indexed | basis_idx, compare_reg | Loop while compare_reg != scratchpad value (indexed by source_idx)
 
-Advances the interpreter past the next corresponding E instruction, if the 8-bit comparison of basis_register and compare_rov fails, using the comparison parameter. 
 
 **P** - red, green, blue
 
