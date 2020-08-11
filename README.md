@@ -34,44 +34,27 @@ Code | Name | Parameters | Description
 ---- | ---- | ---------- | -----------
 **Z**  | Terminate frame | | Terminate current render frame and advance, using F and V registers
 **M**  | Move | target_reg, source_reg | Move the source_reg value into the target_reg
-**ML** | Move literal | target_reg, source_lit | Move the source_lit value into the target_reg
-**MI** | Move scratchpad | target_reg | Move the scratchpad value (indexed by I) into the target_reg
-**MJ** | Move indexed | target_reg, source_idx | Move the scratchpad value (indexed by source_idx) into the target_reg
+**ML** | Move lit | target_reg, source_lit | Move the source_lit value into the target_reg
+**MI** | Move scr | target_reg | Move the scratchpad value (indexed by I) into the target_reg
+**MJ** | Move idx | target_reg, source_idx | Move the scratchpad value (indexed by source_idx) into the target_reg
 **W**  | While | basis_reg, compare_reg | Loop while compare_reg != basis_reg (when equal, jump past corresponding E)
-**WL** | While literal | basis_lit, compare_reg | Loop while compare_reg != basis_lit
-**WI** | While scratchpad | compare_reg | Loop while compare_reg != scratchpad value (indexed by I)
-**WJ** | While indexed | basis_idx, compare_reg | Loop while compare_reg != scratchpad value (indexed by source_idx)
-
-
-**P** - red, green, blue
-
-Updates a pixel, based on red/green/blue parameters and the current LED based on the L register
-
-**p** - operation, red, green, blue
-
-Updates a pixel, based on red/green/blue parameters, and the current LED based on the L register, with the operation indicating how to calculate new RGB values from old ones
-
-**R** - red
-
-Similar behavior to the P instruction, updates a pixel's red value only
-
-**r** - operation, red
-
-Similar behavior to the p instruction, updates a pixel's red value only
-
-**G** - green
-
-Similar behavior to the P instruction, updates a pixel's green value only
-
-**g** - operation, green
-
-Similar behavior to the p instruction, updates a pixel's green value only
-
-**B** - blue
-
-Similar behavior to the P instruction, updates a pixel's blue value only
-
-**b** - operation, blue
-
-Similar behavior to the p instruction, updates a pixel's blue value only
-
+**WL** | While lit | basis_lit, compare_reg | Loop while compare_reg != basis_lit
+**WI** | While scr | compare_reg | Loop while compare_reg != scratchpad value (indexed by I)
+**WJ** | While idx | basis_idx, compare_reg | Loop while compare_reg != scratchpad value (indexed by source_idx)
+**E**  | End while | | End a preceding W, WL, WI, or WJ loop
+**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update pixel value (indexed by L) with specified literal values
+**PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update pixel value (indexed by L) with specified scratchpad (indexed) values
+**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update pixel value (indexed by L) by adding specified literal values
+**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update pixel value (indexed by L) by adding specified scratchpad (indexed) values
+**R**  | Pixel red | red_reg | Update pixel value (red value only, indexed by L) with red_reg value
+**RL** | Pixel red lit | red_lit | Update pixel value (red value only, indexed by L) with red_lit value
+**RI** | Pixel red scr | | Update pixel value (red value only, indexed by L) with scratchpad value (indexed by I)
+**RJ** | Pixel red idx | red_idx | Update pixel value (red value only, indexed by L) with scratchpad value (indexed by red_idx)
+**G**  | Pixel green | green_reg | Update pixel value (green value only, indexed by L) with green_reg value
+**GL** | Pixel green lit | green_lit | Update pixel value (green value only, indexed by L) with green_lit value
+**GI** | Pixel green scr | | Update pixel value (green value only, indexed by L) with scratchpad value (indexed by I)
+**GJ** | Pixel green idx | green_idx | Update pixel value (green value only, indexed by L) with scratchpad value (indexed by green_idx)
+**B**  | Pixel blue | blue_reg | Update pixel value (blue value only, indexed by L) with blue_reg value
+**BL** | Pixel blue lit | blue_lit | Update pixel value (blue value only, indexed by L) with blue_lit value
+**BI** | Pixel blue scr | | Update pixel value (blue value only, indexed by L) with scratchpad value (indexed by I)
+**BJ** | Pixel blue idx | blue_idx | Update pixel value (blue value only, indexed by L) with scratchpad value (indexed by blue_idx)
