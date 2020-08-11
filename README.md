@@ -41,35 +41,35 @@ Code | Name | Parameters | Description
 
 Advances the interpreter past the next corresponding E instruction, if the 8-bit comparison of basis_register and compare_rov fails, using the comparison parameter. 
 
-*P* - red, green, blue
+**P** - red, green, blue
 
 Updates a pixel, based on red/green/blue parameters and the current LED based on the L register
 
-*p* - operation, red, green, blue
+**p** - operation, red, green, blue
 
 Updates a pixel, based on red/green/blue parameters, and the current LED based on the L register, with the operation indicating how to calculate new RGB values from old ones
 
-*R* - red
+**R** - red
 
 Similar behavior to the P instruction, updates a pixel's red value only
 
-*r* - operation, red
+**r** - operation, red
 
 Similar behavior to the p instruction, updates a pixel's red value only
 
-*G* - green
+**G** - green
 
 Similar behavior to the P instruction, updates a pixel's green value only
 
-*g* - operation, green
+**g** - operation, green
 
 Similar behavior to the p instruction, updates a pixel's green value only
 
-*B* - blue
+**B** - blue
 
 Similar behavior to the P instruction, updates a pixel's blue value only
 
-*b* - operation, blue
+**b** - operation, blue
 
 Similar behavior to the p instruction, updates a pixel's blue value only
 
