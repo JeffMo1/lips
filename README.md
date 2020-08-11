@@ -30,14 +30,13 @@ _scratch_
 
 # Instructions
 
-*Z* - no parameters
-
-Default operation, terminates current frame for rendering and advancing to next frame, using F and V registers
-
-*L* - target_register, operation, source_rov
-
-Loads the target_register with the 8-bit value computed based on the operation and source_rov parameters.
-
+Code | Name | Parameters | Description
+---- | ---- | ---------- | -----------
+*Z*  | Terminate frame | | Terminate current render frame and advance, using F and V registers
+*M*  | Move | target_reg, source_reg | Move the source_reg value into the target_reg
+*ML* | Move literal | target_reg, source_lit | Move the source_lit value into the target_reg
+*MI* | Move indexed | target_reg, source_idx | Move the X(source_idx) value into the target_reg
+ 
 *W* - basis_register, comparison, compare_rov
 
 Advances the interpreter past the next corresponding E instruction, if the 8-bit comparison of basis_register and compare_rov fails, using the comparison parameter. 
