@@ -7,12 +7,13 @@ One string of 8-bit bytes, up to TBD bytes in length. Instructions contain a min
 
 # Registers
 
-LIPS has a number of registers that provide access to strip configurations (read-only), LED RGB data (read/write), animation metadata, and scrachpad data for the animation calculations. 
+LIPS has a number of registers that provide access to system settings/services, LED RGB data, animation metadata, and scratchpad data for the animation calculations.
 
-_config_
+_system_
 
-* N - R/O - Number of LEDs in the strip 
+* N - R/O - Number of LEDs in the strip
 * S - R/O - Strip identifier, usually sequential from 0 to one less than total number of strips
+* R - R/O - Random value (0-255)
 
 _LED_
 
