@@ -1,6 +1,9 @@
 byte program[256];
 byte iptr;
 
+byte frame_counter;
+byte frame_overflow;
+
 # https://github.com/JeffMo1/lips#instructions
 
 const byte Z = 0;
@@ -42,11 +45,24 @@ void setup() {
   
   iptr = 0;
   do {
-    program[iptr++] = I_Z;
+    program[iptr++] = Z;
   } while (iptr != 0); 
+
+  # Set frame counter and overflow to defaults.
+  frame_counter = 0;
+  frame_overflow = 10;
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  byte instruction;
+  
+  iptr = 0;
+  do {
+    instruction = program[iptr]
+  } while (instruction != Z);
 
+  frame_counter++;
+  if (frame_counter >= frame_overflow) { frame_counter = 0; }
+  
+  # possible frame speed adjustment could go here
 }
