@@ -1,5 +1,7 @@
-byte program[256];
+byte instructions[256];
 byte iptr;
+
+byte registers[256];
 
 byte frame_counter;
 byte frame_overflow;
@@ -45,9 +47,12 @@ void setup() {
   
   iptr = 0;
   do {
-    program[iptr++] = Z;
-  } while (iptr != 0); 
+    instructions[iptr] = Z;
+    registers[iptr] = 0;
+  } while (iptr++ != 0); 
 
+  # Load real program here TBD.
+  
   # Set frame counter and overflow to defaults.
   frame_counter = 0;
   frame_overflow = 10;
@@ -58,7 +63,7 @@ void loop() {
   
   iptr = 0;
   do {
-    instruction = program[iptr];
+    instruction = instructions[iptr];
     switch (instruction) {
       case M:  move_reg(); break;
       case ML: move_lit(); break;
@@ -93,4 +98,18 @@ void loop() {
   if (frame_counter >= frame_overflow) { frame_counter = 0; }
   
   # possible frame speed adjustment could go here
+}
+
+#
+# Instruction functions
+#
+
+void move_reg() {
+  registers[instructions[iptr+1]] = registers[instructions[iptr+2]];
+  iptr += 3;
+}
+
+void move_lit() {
+  registers[instructions[iptr+1]] = instructions[iptr+2];
+  iptr += 3;
 }
