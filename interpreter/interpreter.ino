@@ -58,7 +58,35 @@ void loop() {
   
   iptr = 0;
   do {
-    instruction = program[iptr]
+    instruction = program[iptr];
+    switch (instruction) {
+      case M:  move_reg(); break;
+      case ML: move_lit(); break;
+      case MI: move_scr(); break;
+      case MJ: move_idx(); break;
+      case W:  while_reg(); break;
+      case WL: while_lit(); break;
+      case WI: while_scr(); break;
+      case WJ: while_idx(); break;
+      case E:  end_while(); break;
+      case PL: pixel_lit(); break;
+      case PJ: pixel_idx(); break;
+      case QL: pixel_add_lit(); break;
+      case QJ: pixel_add_idx(); break;
+      case R:  pixel_red_reg(); break;
+      case RL: pixel_red_lit(); break;
+      case RI: pixel_red_scr(); break;
+      case RJ: pixel_red_idx(); break;
+      case G:  pixel_green_reg(); break;
+      case GL: pixel_green_lit(); break;
+      case GI: pixel_green_scr(); break;
+      case GJ: pixel_green_idx(); break;
+      case B:  pixel_blue_reg(); break;
+      case BL: pixel_blue_lit(); break;
+      case BI: pixel_blue_scr(); break;
+      case BJ: pixel_blue_idx(); break;
+      default: terminate_frame(); break;   # Includes Z instruction and any unknown instruction.
+    }
   } while (instruction != Z);
 
   frame_counter++;
