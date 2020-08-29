@@ -6,7 +6,7 @@ byte registers[256];
 byte frame_counter;
 byte frame_overflow;
 
-# https://github.com/JeffMo1/lips#instructions
+// https://github.com/JeffMo1/lips#instructions
 
 const byte Z = 0;
 
@@ -43,7 +43,7 @@ const byte BJ = 25;
 
 
 void setup() {
-  # Initialize instruction pointer and program storage.
+  // Initialize instruction pointer and program storage.
   
   iptr = 0;
   do {
@@ -51,9 +51,9 @@ void setup() {
     registers[iptr] = 0;
   } while (iptr++ != 0); 
 
-  # Load real program here TBD.
+  // Load real program here TBD.
   
-  # Set frame counter and overflow to defaults.
+  // Set frame counter and overflow to defaults.
   frame_counter = 0;
   frame_overflow = 10;
 }
@@ -90,19 +90,19 @@ void loop() {
       case BL: pixel_blue_lit(); break;
       case BI: pixel_blue_scr(); break;
       case BJ: pixel_blue_idx(); break;
-      default: terminate_frame(); break;   # Includes Z instruction and any unknown instruction.
+      default: terminate_frame(); break;   // Includes Z instruction and any unknown instruction.
     }
   } while (instruction != Z);
 
   frame_counter++;
   if (frame_counter >= frame_overflow) { frame_counter = 0; }
   
-  # possible frame speed adjustment could go here
+  // possible frame speed adjustment could go here
 }
 
-#
-# Instruction functions
-#
+/*
+** Instruction functions
+*/
 
 void move_reg() {
   registers[instructions[iptr+1]] = registers[instructions[iptr+2]];
