@@ -44,7 +44,7 @@ Code | Index | Name | Access | Notes
 
 Code | Name | Parameters | Description
 ---- | ---- | ---------- | -----------
-**Z**  | Terminate frame | | Terminate current render frame and advance, using F and V registers
+**Z**  | Terminate frame | | Terminate current render frame and advance, using R_F and R_V
 **I**  | Increment | increment_reg | Add one (with rollover) to the increment_reg
 **IX** | Increment scr | | Add one (with rollover) to the scratchpad value (R_X)
 **IJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
@@ -53,10 +53,10 @@ Code | Name | Parameters | Description
 **DJ** | Decrement idx | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
 **A**  | Add | basis_reg, addend_reg | Add basis_reg + addend_reg, results to basis_reg
 **AL** | Add lit | basis_reg, addend_lit | Add basis_reg + addend_reg, results to basis_reg
-**M**  | Multiply | basis_reg, factor_reg | Multiply basis_reg x factor_reg, results to P/Q
-**ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to P/Q
-**MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (R_X), results to P/Q
-**MJ** | Multiply idx | basis_reg, factor_idx | Multiply basis_reg x scratchpad value (indexed by factor_idx), results to P/Q
+**M**  | Multiply | basis_reg, factor_reg | Multiply basis_reg x factor_reg, results to (R_Q, R_P)
+**ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to (R_Q, R_P)
+**MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (R_X), results to (R_Q, R_P)
+**MJ** | Multiply idx | basis_reg, factor_idx | Multiply basis_reg x scratchpad value (indexed by factor_idx), results to (R_Q, R_P)
 **L**  | Load | target_reg, source_reg | Load the source_reg value into the target_reg
 **LL** | Load lit | target_reg, source_lit | Load the source_lit value into the target_reg
 **LX** | Load scr | target_reg | Load the scratchpad value (R_X) into the target_reg
