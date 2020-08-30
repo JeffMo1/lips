@@ -7,29 +7,39 @@ One string of 8-bit bytes, up to TBD bytes in length. Instructions contain a min
 
 # Registers
 
-LIPS has a number of registers that provide access to system settings/services, LED RGB data, animation metadata, and scratchpad data for the animation calculations.
+LIPS has a number of registers that provide access to system settings/services, LED RGB data, animation metadata, and scratchpad data for the animation calculations. There are 256 total registers, and certain registers at the end of that address space have special functions, as shown in the table. (Other registers are general purpose.)
 
-_system_
+_system registers_
 
-* N - R/O - Number of LEDs in the strip
-* S - R/O - Strip identifier, usually sequential from 0 to one less than total number of strips
-* R - R/O - Random value (0-255)
-* P - R/O - LSB of multiplication operations
-* Q - R/O - MSB of multiplication operations
+Code | Index | Name | Access | Notes
+---- | ----- | ---- | ------ | -----
+**R_N** | 255 | LED Count | R/O | Number of LEDs in the strip (defined at compile time)
+**R_S** | 254 | Strip ID  | R/O | Convention is zero-based, sequential (defined by hardware configuration)
+**R_R** | 253 | Random    | R/O | Random byte value on each read, 0-255
+**R_P** | 252 | Mult LSB  | R/W | Receives least significant byte of result during multiplications
+**R_Q** | 251 | Mult MSB  | R/W | Receives most significant byte of result during multiplications
 
-_LED_
+_LED register_
 
-* L - R/W - LED index, read for current position, write to change position
 
-_anim_
+Code | Index | Name | Access | Notes
+---- | ----- | ---- | ------ | -----
+**R_L** | 250 | LED Index | R/W | Current working LED index (0..**R_N**-1), used for **P**, **Q**, **R**, **G**, **B** instruction families
 
-* F - R/O - Frame counter, read for current frame, auto-incremented by interpreter
-* V - R/W - Frame overflow, read for current value, write to change value, affects where frame counter will roll over to zero
+_animation registers_
 
-_scratch_
+Code | Index | Name | Access | Notes
+---- | ----- | ---- | ------ | -----
+**R_F** | 249 | Frame Counter  | R/O | Current working frame, initially zero, auto-incremented by interpreter after each frame
+**R_V** | 248 | Frame Overflow | R/W | After each frame, frame counter is reset to zero if >= this overflow value
 
-* I - R/W - Scratchpad index, read for current position, write to change position
-* X - R/W - Scratchpad data, read for current data, write to change data
+
+_scratchpad registers_
+
+Code | Index | Name | Access | Notes
+---- | ----- | ---- | ------ | -----
+**R_I** | 247 | Scratchpad Index | R/W | Current working index into scratchpad data
+**R_X** | 246 | Scratchpad Data  | R/W | Read or write the byte at current indexed scratchpad location
 
 # Instructions
 
