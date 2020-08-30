@@ -65,19 +65,19 @@ Code | Name | Parameters | Description
 **WX** | While scr | compare_reg | Loop while compare_reg != scratchpad value (R_X)
 **WJ** | While idx | compare_reg, basis_idx | Loop while compare_reg != scratchpad value (indexed by basis_idx)
 **E**  | End while | | End a preceding W, WL, WI, or WJ loop
-**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED pixel R_L with specified literal values
-**PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED pixel R_L with specified scratchpad (indexed) values
-**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED pixel R_L by adding specified literal values
-**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED pixel R_L by adding specified scratchpad (indexed) values
+**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified literal values
+**PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified scratchpad (indexed) values
+**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update &#x1F534;&#x1F7E2;&#x1F535; LED at position R_L by adding specified literal values
+**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update &#x1F534;&#x1F7E2;&#x1F535; LED at position R_L by adding specified scratchpad (indexed) values
 **R**  | Pixel red | red_reg | Update LED &#x1F534; at position R_L with red_reg value
 **RL** | Pixel red lit | red_lit | Update LED &#x1F534; at position R_L with red_lit value
 **RX** | Pixel red scr | | Update LED &#x1F534; at position R_L with scratchpad value (R_X)
 **RJ** | Pixel red idx | red_idx | Update LED &#x1F534; at position R_L with scratchpad value (indexed by red_idx)
-**G**  | Pixel green | green_reg | Update pixel (green only) with green_reg value
-**GL** | Pixel green lit | green_lit | Update pixel (green only) with green_lit value
-**GX** | Pixel green scr | | Update pixel (green only) with scratchpad value (R_X)
-**GJ** | Pixel green idx | green_idx | Update pixel (green only) with scratchpad value (indexed by green_idx)
-**B**  | Pixel blue | blue_reg | Update pixel (blue only) with blue_reg value
-**BL** | Pixel blue lit | blue_lit | Update pixel (blue only) with blue_lit value
-**BX** | Pixel blue scr | | Update pixel (blue only) with scratchpad value (R_X)
-**BJ** | Pixel blue idx | blue_idx | Update pixel (blue only) with scratchpad value (indexed by blue_idx)
+**G**  | Pixel green | green_reg | Update LED &#x1F7E2; at position R_L with green_reg value
+**GL** | Pixel green lit | green_lit | Update LED &#x1F7E2; at position R_L with green_lit value
+**GX** | Pixel green scr | | Update LED &#x1F7E2; at position R_L with scratchpad value (R_X)
+**GJ** | Pixel green idx | green_idx | Update LED &#x1F7E2; at position R_L with scratchpad value (indexed by green_idx)
+**B**  | Pixel blue | blue_reg | Update LED &#x1F535; at position R_L with blue_reg value
+**BL** | Pixel blue lit | blue_lit | Update LED &#x1F535; at position R_L with blue_lit value
+**BX** | Pixel blue scr | | Update LED &#x1F535; at position R_L with scratchpad value (R_X)
+**BJ** | Pixel blue idx | blue_idx | Update LED &#x1F535; at position R_L with scratchpad value (indexed by blue_idx)
