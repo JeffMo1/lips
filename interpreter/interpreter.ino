@@ -98,6 +98,9 @@ void loop() {
   do {
     instruction = instructions[iptr];
     switch (instruction) {
+      case I:  inc_reg(); break;
+      case IX: inc_scr(); break;
+      case IJ: inc_idx(); break;
       case L:  load_reg(); break;
       case LL: load_lit(); break;
       case LX: load_scr(); break;
@@ -182,6 +185,21 @@ void reg_write(byte reg, byte data) {
 /*
 ** Instruction implementations
 */
+
+void inc_reg() {
+  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1] + 1));
+  iptr += 2;
+}
+
+void inc_scr() {
+  reg_write(R_X, reg_read(R_X) + 1);
+  iptr += 1;
+}
+
+void inc_idx() {
+  scratchpad[instructions[iptr+1]] += 1;
+  iptr += 2;
+}
 
 void load_reg() {
   reg_write(instructions[iptr+1], reg_read(instructions[iptr+2]));
