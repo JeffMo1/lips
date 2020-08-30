@@ -129,6 +129,8 @@ void loop() {
       case DJ: dec_idx(); break;
       case A:  add_reg(); break;
       case AL: add_lit(); break;
+      case AX: add_scr(); break;
+      case AJ: add_idx(); break;
       case L:  load_reg(); break;
       case LL: load_lit(); break;
       case LX: load_scr(); break;
@@ -277,6 +279,18 @@ void add_lit() {
   byte basis = reg_read(instructions[iptr+1]);
   reg_write(instructions[iptr+1], basis + instructions[iptr+2]);
   iptr += i_lengths[AL];
+}
+
+void add_scr() {
+  byte basis = reg_read(instructions[iptr+1]);
+  reg_write(instructions[iptr+1], basis + reg_read(R_X));
+  iptr += i_lengths[AX];
+}
+
+void add_idx() {
+  byte basis = reg_read(instructions[iptr+1]);
+  reg_write(instructions[iptr+1], basis + scratchpad[instructions[iptr+2]]);
+  iptr += i_lengths[AJ];
 }
 
 void load_reg() {
