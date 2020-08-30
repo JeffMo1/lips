@@ -205,7 +205,7 @@ void inc_idx() {
 }
 
 void dec_reg() {
-  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1] - 1));
+  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) - 1);
   iptr += 2;
 }
 
