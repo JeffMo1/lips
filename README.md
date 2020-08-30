@@ -69,10 +69,10 @@ Code | Name | Parameters | Description
 **PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED pixel R_L with specified scratchpad (indexed) values
 **QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED pixel R_L by adding specified literal values
 **QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED pixel R_L by adding specified scratchpad (indexed) values
-**R**  | Pixel red | red_reg | Update LED pixel &#x1F534; @ R_L with red_reg value
-**RL** | Pixel red lit | red_lit | Update LED pixel (red only) with red_lit value
-**RX** | Pixel red scr | | Update LED pixel (red only) with scratchpad value (R_X)
-**RJ** | Pixel red idx | red_idx | Update LED pixel (red only) with scratchpad value (indexed by red_idx)
+**R**  | Pixel red | red_reg | Update LED &#x1F534; at position R_L with red_reg value
+**RL** | Pixel red lit | red_lit | Update LED &#x1F534; at position R_L with red_lit value
+**RX** | Pixel red scr | | Update LED &#x1F534; at position R_L with scratchpad value (R_X)
+**RJ** | Pixel red idx | red_idx | Update LED &#x1F534; at position R_L with scratchpad value (indexed by red_idx)
 **G**  | Pixel green | green_reg | Update pixel (green only) with green_reg value
 **GL** | Pixel green lit | green_lit | Update pixel (green only) with green_lit value
 **GX** | Pixel green scr | | Update pixel (green only) with scratchpad value (R_X)
