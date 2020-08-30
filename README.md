@@ -67,8 +67,8 @@ Code | Name | Parameters | Description
 **E**  | End while | | End a preceding W, WL, WI, or WJ loop
 **PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified literal values
 **PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified scratchpad (indexed) values
-**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update &#x1F534;&#x1F7E2;&#x1F535; LED at position R_L by adding specified literal values
-**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update &#x1F534;&#x1F7E2;&#x1F535; LED at position R_L by adding specified scratchpad (indexed) values
+**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified literal values
+**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified scratchpad (indexed) values
 **R**  | Pixel red | red_reg | Update LED &#x1F534; at position R_L with red_reg value
 **RL** | Pixel red lit | red_lit | Update LED &#x1F534; at position R_L with red_lit value
 **RX** | Pixel red scr | | Update LED &#x1F534; at position R_L with scratchpad value (R_X)
