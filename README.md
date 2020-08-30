@@ -18,9 +18,9 @@ Code | Index | Name | Access | Notes
 **R_R** | 253 | Random    | R/O | Random byte value on each read, 0-255
 **R_P** | 252 | Mult LSB  | R/W | Receives least significant byte of result during multiplications
 **R_Q** | 251 | Mult MSB  | R/W | Receives most significant byte of result during multiplications
+**R_Z** | 250 | Zero      | R/O | Always returns zero
 
 _LED register_
-
 
 Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
@@ -32,7 +32,6 @@ Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
 **R_F** | 249 | Frame Counter  | R/O | Current working frame, initially zero, auto-incremented by interpreter after each frame
 **R_V** | 248 | Frame Overflow | R/W | After each frame, frame counter is reset to zero if >= this overflow value
-
 
 _scratchpad registers_
 
@@ -65,8 +64,10 @@ Code | Name | Parameters | Description
 **WX** | While scr | compare_reg | Loop while compare_reg != scratchpad value (R_X)
 **WJ** | While idx | compare_reg, basis_idx | Loop while compare_reg != scratchpad value (indexed by basis_idx)
 **E**  | End while | | End a preceding W, WL, WI, or WJ loop
+**P**  | Pixel | red_reg, green_reg, blue_reg | Update &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified register values
 **PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified literal values
 **PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified scratchpad (indexed) values
+**Q**  | Pixel add | red_reg, green_reg, blue_reg | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified register values
 **QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified literal values
 **QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified scratchpad (indexed) values
 **R**  | Pixel red | red_reg | Update LED &#x1F534; at position R_L with red_reg value

@@ -14,14 +14,15 @@ const byte R_S = 254;
 const byte R_R = 253;
 const byte R_P = 252;
 const byte R_Q = 251;
+const byte R_Z = 250;
 
-const byte R_L = 250;
+const byte R_L = 249;
 
-const byte R_F = 249;
-const byte R_V = 248;
+const byte R_F = 248;
+const byte R_V = 247;
 
-const byte R_I = 247;
-const byte R_X = 246;
+const byte R_I = 246;
+const byte R_X = 245;
 
 byte scratchpad[256];
 
@@ -58,28 +59,43 @@ const byte WX = 21;
 const byte WJ = 22;
 const byte E = 23;
 
-const byte PL = 24;
-const byte PJ = 25;
-const byte QL = 26;
-const byte QJ = 27;
+const byte P = 24;
+const byte PL = 25;
+const byte PJ = 26;
 
-const byte R = 28;
-const byte RL = 29;
-const byte RX = 30;
-const byte RJ = 31;
+const byte Q = 27;
+const byte QL = 28;
+const byte QJ = 29;
 
-const byte G = 32;
-const byte GL = 33;
-const byte GX = 34;
-const byte GJ = 35;
+const byte R = 30;
+const byte RL = 31;
+const byte RX = 32;
+const byte RJ = 33;
 
-const byte B = 36;
-const byte BL = 37;
-const byte BX = 38;
-const byte BJ = 39;
+const byte G = 34;
+const byte GL = 35;
+const byte GX = 36;
+const byte GJ = 37;
 
-const byte i_lengths[] = {1,  2, 1, 2,  2, 1, 2,  3, 3, 2, 3,  3, 3, 2, 3,  3, 3, 2, 3,   3, 3, 2, 3, 1,
-                          4, 4, 4, 4,  3, 3, 2, 3,  3, 3, 2, 3,  3, 3, 2, 3};
+const byte B = 38;
+const byte BL = 39;
+const byte BX = 40;
+const byte BJ = 41;
+
+const byte i_lengths[] = {
+  1,                    // Z
+  2, 1, 2,              // I
+  2, 1, 2,              // D
+  3, 3, 2, 3,           // A
+  3, 3, 2, 3,           // M
+  3, 3, 2, 3,           // L
+  3, 3, 2, 3, 1,        // W
+  4, 4, 4,              // P
+  4, 4, 4,              // Q
+  3, 3, 2, 3,           // R
+  3, 3, 2, 3,           // G
+  3, 3, 2, 3            // B
+};
 
 void setup() {
   // Initialize IP, SP, and program storage.
@@ -120,8 +136,10 @@ void loop() {
       case WX: while_scr(); break;
       case WJ: while_idx(); break;
       case E:  end_while(); break;
+      case P:  pixel_reg(); break;
       case PL: pixel_lit(); break;
       case PJ: pixel_idx(); break;
+      case Q:  pixel_add_reg(); break;
       case QL: pixel_add_lit(); break;
       case QJ: pixel_add_idx(); break;
       case R:  pixel_red_reg(); break;
@@ -177,6 +195,7 @@ byte reg_read(byte reg) {
   switch (reg) {
     case R_R: value = registers[R_R]; registers[R_R] = random(256); break;
     case R_X: value = scratchpad[R_I]; break;
+    case R_Z: value = 0; break;
     default:  value = registers[reg];
   }
   return value;
@@ -203,7 +222,7 @@ void pop_ip() {
 }
 
 /*
-** Instruction implementations
+** Instruction implementations (calc)
 */
 
 void inc_reg() {
@@ -256,6 +275,10 @@ void load_idx() {
   iptr += i_lengths[LJ];
 }
 
+/*
+** Instruction implementations (loop)
+*/
+
 void skip_while() {
   byte nest_ct = 0;
   do {
@@ -269,6 +292,7 @@ void skip_while() {
     iptr += i_lengths[instructions[iptr]];
   } while (nest_ct > 0);
 }
+
 void while_reg() {
   if (reg_read(instructions[iptr+1]) == reg_read(instructions[iptr+2])) {
     skip_while();
@@ -279,6 +303,68 @@ void while_reg() {
   }
 }
 
+void while_lit() {
+  if (reg_read(instructions[iptr+1]) == instructions[iptr+2])) {
+    skip_while();
+  }
+  else {
+    push_ip();
+    iptr += i_lengths[WL];
+  }
+}
+
+void while_scr() {
+  if (reg_read(instructions[iptr+1]) == reg_read(R_X)) {
+    skip_while();
+  }
+  else {
+    push_ip();
+    iptr += i_lengths[WX];
+  }
+}
+
+void while_idx() {
+  if (reg_read(instructions[iptr+1]) == scratchpad[instructions[iptr+2]]) {
+    skip_while();
+  }
+  else {
+    push_ip();
+    iptr += i_lengths[WJ];
+  }
+}
+
 void end_while() {
   pop_ip();
+}
+
+/*
+** Instruction implementations (pixel)
+*/
+
+void pixel_reg() {
+  // red = reg_read(instructions[iptr+1]);
+  // green = reg_read(instructions[iptr+2]);
+  // blue = reg_read(instructions[iptr+3]);
+  iptr += i_lengths[P];
+}
+
+void pixel_lit() {
+  // red = instructions[iptr+1];
+  // green = instructions[iptr+2];
+  // blue = instructions[iptr+3];
+  iptr += i_lengths[PL];
+}
+
+void pixel_idx() {
+  // red = scratchpad[instructions[iptr+1]];
+  // green = scratchpad[instructions[iptr+2]];
+  // blue = scratchpad[instructions[iptr+3]];
+  iptr += i_lengths[PJ];
+}
+
+void pixel_add_reg() {
+  // red_delta = reg_read(instructions[iptr+1]);
+  // green_delta = reg_read(instructions[iptr+2]);
+  // blue_delta = reg_read(instructions[iptr+3]);
+  iptr += i_lengths[Q];
 }
