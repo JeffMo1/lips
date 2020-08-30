@@ -53,6 +53,8 @@ Code | Name | Parameters | Description
 **DJ** | Decrement idx | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
 **A**  | Add | basis_reg, addend_reg | Add basis_reg + addend_reg, results to basis_reg
 **AL** | Add lit | basis_reg, addend_lit | Add basis_reg + addend_reg, results to basis_reg
+**AX** | Add scr | basis_reg | Add basis_reg + scratchpad value (R_X), results to basis_reg
+**AJ** | Add idx | basis_reg, addend_idx | Add basis_reg + scratchpad value (indexed by addend_idx), results to basis_reg
 **M**  | Multiply | basis_reg, factor_reg | Multiply basis_reg x factor_reg, results to (R_Q, R_P)
 **ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to (R_Q, R_P)
 **MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (R_X), results to (R_Q, R_P)
