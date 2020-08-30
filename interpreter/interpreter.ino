@@ -10,37 +10,53 @@ byte frame_overflow;
 
 const byte Z = 0;
 
-const byte M = 1;
-const byte ML = 2;
-const byte MI = 3;
-const byte MJ = 4;
+const byte I = 1;
+const byte IX = 2;
+const byte IJ = 3;
+const byte D = 4;
+const byte DX = 5;
+const byte DJ = 6;
 
-const byte W = 5;
-const byte WL = 6;
-const byte WI = 7;
-const byte WJ = 8;
-const byte E = 9;
+const byte A = 7;
+const byte AL = 8;
+const byte AX = 9;
+const byte AJ = 10;
 
-const byte PL = 10;
-const byte PJ = 11;
-const byte QL = 12;
-const byte QJ = 13;
+const byte M = 11;
+const byte ML = 12;
+const byte MX = 13;
+const byte MJ = 14;
 
-const byte R = 14;
-const byte RL = 15;
-const byte RI = 16;
-const byte RJ = 17;
+const byte L = 15;
+const byte LL = 16;
+const byte LX = 17;
+const byte LJ = 18;
 
-const byte G = 18;
-const byte GL = 19;
-const byte GI = 20;
-const byte GJ = 21;
+const byte W = 19;
+const byte WL = 20;
+const byte WX = 21;
+const byte WJ = 22;
+const byte E = 23;
 
-const byte B = 22;
-const byte BL = 23;
-const byte BI = 24;
-const byte BJ = 25;
+const byte PL = 24;
+const byte PJ = 25;
+const byte QL = 26;
+const byte QJ = 27;
 
+const byte R = 28;
+const byte RL = 29;
+const byte RX = 30;
+const byte RJ = 31;
+
+const byte G = 32;
+const byte GL = 33;
+const byte GX = 34;
+const byte GJ = 35;
+
+const byte B = 36;
+const byte BL = 37;
+const byte BX = 38;
+const byte BJ = 39;
 
 void setup() {
   // Initialize instruction pointer and program storage.

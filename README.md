@@ -14,6 +14,8 @@ _system_
 * N - R/O - Number of LEDs in the strip
 * S - R/O - Strip identifier, usually sequential from 0 to one less than total number of strips
 * R - R/O - Random value (0-255)
+* P - R/O - LSB of multiplication operations
+* Q - R/O - MSB of multiplication operations
 
 _LED_
 
@@ -36,10 +38,18 @@ Code | Name | Parameters | Description
 **Z**  | Terminate frame | | Terminate current render frame and advance, using F and V registers
 **I**  | Increment | increment_reg | Add one (with rollover) to the increment_reg
 **IX** | Increment scr | | Add one (with rollover) to the scratchpad value (X register)
-**M**  | Move | target_reg, source_reg | Move the source_reg value into the target_reg
-**ML** | Move lit | target_reg, source_lit | Move the source_lit value into the target_reg
-**MX** | Move scr | target_reg | Move the scratchpad value (X register) into the target_reg
-**MJ** | Move idx | target_reg, source_idx | Move the scratchpad value (indexed by source_idx) into the target_reg
+**IJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
+**D**  | Decrement | decrement_reg | Subtract one (with rollover) from the decrement_reg
+**DX** | Decrement scr | | Subtract one (with rollover) from the scratchpad value (X register)
+**DJ** | Decrement idx | | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
+**M**  | Multiply | basis_reg, factor_reg | Multiply basis_reg x factor_reg, results to P/Q
+**ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to P/Q
+**MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (X register), results to P/Q
+**MJ** | Multiply idx | basis_reg, factor_idx | Multiply basis_reg x scratchpad value (indexed by factor_idx), results to P/Q
+**L**  | Load | target_reg, source_reg | Load the source_reg value into the target_reg
+**LL** | Load lit | target_reg, source_lit | Load the source_lit value into the target_reg
+**LX** | Load scr | target_reg | Load the scratchpad value (X register) into the target_reg
+**LJ** | Load idx | target_reg, source_idx | Load the scratchpad value (indexed by source_idx) into the target_reg
 **W**  | While | basis_reg, compare_reg | Loop while compare_reg != basis_reg (when equal, jump past corresponding E)
 **WL** | While lit | basis_lit, compare_reg | Loop while compare_reg != basis_lit
 **WX** | While scr | compare_reg | Loop while compare_reg != scratchpad value (X register)
