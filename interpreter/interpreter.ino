@@ -143,19 +143,62 @@ void init_frame() {
 
 void advance_frame() {
   registers[R_F]++;
+  check_frame_overflow();
+}
+
+void check_frame_overflow() {
   if (registers[R_F] >= registers[R_V]) { registers[R_V] = 0; }
 }
 
+void init_system() {
+  registers[R_N] = 150;  // TBD: Should use the LED const for the library
+  registers[R_S] = 0;    // TBD: Read this from hardware pins
+  registers[R_R] = random(256);
+  registers[R_P] = 0;
+  registers[R_Q] = 0;
+}
+
+byte reg_read(byte reg) {
+  byte value;
+
+  switch (reg) {
+    case R_R: value = registers[R_R]; registers[R_R] = random(256); break;
+    case R_X: value = scratchpad[R_I]; break;
+    default:  value = registers[reg];
+  }
+  return value;
+}
+
+void reg_write(byte reg, byte data) {
+  switch (reg) {
+    case R_N: break;
+    case R_S: break;
+    case R_R: break;
+    case R_F: break;
+    case R_X: scratchpad[R_I] = data; break;
+    default:  registers[reg] = data;
+  }
+}
 /*
 ** Instruction implementations
 */
 
 void load_reg() {
-  registers[instructions[iptr+1]] = registers[instructions[iptr+2]];
+  reg_write(instructions[iptr+1], reg_read(instructions[iptr+2]));
   iptr += 3;
 }
 
 void load_lit() {
-  registers[instructions[iptr+1]] = instructions[iptr+2];
+  reg_write(instructions[iptr+1], instructions[iptr+2]);
+  iptr += 3;
+}
+
+void load_scr() {
+  reg_write(instructions[iptr+1], reg_read(R_X));
+  iptr += 2;
+}
+
+void load_idx() {
+  reg_write(instructions[iptr+1], scratchpad[instructions[iptr+2]]);
   iptr += 3;
 }
