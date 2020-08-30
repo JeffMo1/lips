@@ -131,6 +131,10 @@ void loop() {
       case AL: add_lit(); break;
       case AX: add_scr(); break;
       case AJ: add_idx(); break;
+      case M:  mult_reg(); break;
+      case ML: mult_lit(); break;
+      case MX: mult_scr(); break;
+      case MJ: mult_idx(); break;
       case L:  load_reg(); break;
       case LL: load_lit(); break;
       case LX: load_scr(); break;
@@ -291,6 +295,34 @@ void add_idx() {
   byte basis = reg_read(instructions[iptr+1]);
   reg_write(instructions[iptr+1], basis + scratchpad[instructions[iptr+2]]);
   iptr += i_lengths[AJ];
+}
+
+void mult_reg() {
+  word product = reg_read(instructions[iptr+1]) * reg_read(instructions[iptr+2]);
+  reg_write(R_P, lowByte(product));
+  reg_write(R_Q, highByte(product));
+  iptr += i_lengths[M];
+}
+
+void mult_lit() {
+  word product = reg_read(instructions[iptr+1]) * instructions[iptr+2];
+  reg_write(R_P, lowByte(product));
+  reg_write(R_Q, highByte(product));
+  iptr += i_lengths[ML];
+}
+
+void mult_scr() {
+  word product = reg_read(instructions[iptr+1]) * reg_read(R_X);
+  reg_write(R_P, lowByte(product));
+  reg_write(R_Q, highByte(product));
+  iptr += i_lengths[MX];
+}
+
+void mult_idx() {
+  word product = reg_read(instructions[iptr+1]) * scratchpad[instructions[iptr+2]];
+  reg_write(R_P, lowByte(product));
+  reg_write(R_Q, highByte(product));
+  iptr += i_lengths[MJ];
 }
 
 void load_reg() {
