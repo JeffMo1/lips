@@ -51,7 +51,7 @@ Code | Name | Parameters | Description
 **IJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
 **D**  | Decrement | decrement_reg | Subtract one (with rollover) from the decrement_reg
 **DX** | Decrement scr | | Subtract one (with rollover) from the scratchpad value (X register)
-**DJ** | Decrement idx | | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
+**DJ** | Decrement idx | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
 **M**  | Multiply | basis_reg, factor_reg | Multiply basis_reg x factor_reg, results to P/Q
 **ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to P/Q
 **MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (X register), results to P/Q
