@@ -187,6 +187,7 @@ void init_system() {
   registers[R_R] = random(256);
   registers[R_P] = 0;
   registers[R_Q] = 0;
+  registers[R_Z] = 0;
 }
 
 byte reg_read(byte reg) {
@@ -207,6 +208,7 @@ void reg_write(byte reg, byte data) {
     case R_S: break;
     case R_R: break;
     case R_F: break;
+    case R_Z: break;
     case R_X: scratchpad[R_I] = data; break;
     default:  registers[reg] = data;
   }
@@ -219,6 +221,14 @@ void push_ip() {
 
 void pop_ip() {
   iptr = stack[--sptr];
+}
+
+/* Instruction implementations (render)
+**
+*/
+
+void terminate_frame() {
+  // TBD
 }
 
 /*
@@ -304,7 +314,7 @@ void while_reg() {
 }
 
 void while_lit() {
-  if (reg_read(instructions[iptr+1]) == instructions[iptr+2])) {
+  if (reg_read(instructions[iptr+1]) == instructions[iptr+2]) {
     skip_while();
   }
   else {
@@ -367,4 +377,90 @@ void pixel_add_reg() {
   // green_delta = reg_read(instructions[iptr+2]);
   // blue_delta = reg_read(instructions[iptr+3]);
   iptr += i_lengths[Q];
+}
+
+void pixel_add_lit() {
+  // red_delta = instructions[iptr+1];
+  // green_delta = instructions[iptr+2];
+  // blue_delta = instructions[iptr+3];
+  iptr += i_lengths[QL];
+}
+
+void pixel_add_idx() {
+  // red_delta = scratchpad[instructions[iptr+1]];
+  // green_delta = scratchpad[instructions[iptr+2]];
+  // blue_delta = scratchpad[instructions[iptr+3]];
+  iptr += i_lengths[QJ];
+}
+
+/*
+** Instruction implementations (red)
+*/
+
+void pixel_red_reg() {
+  // red = reg_read(instructions[iptr+1]);
+  iptr += i_lengths[R];
+}
+
+void pixel_red_lit() {
+  // red = instructions[iptr+1];
+  iptr += i_lengths[RL];
+}
+
+void pixel_red_scr() {
+  // red = reg_read(R_X);
+  iptr += i_lengths[RX];
+}
+
+void pixel_red_idx() {
+  // red = scratchpad[instructions[iptr+1]];
+  iptr += i_lengths[RJ];
+}
+
+/*
+** Instruction implementations (green)
+*/
+
+void pixel_green_reg() {
+  // green = reg_read(instructions[iptr+1]);
+  iptr += i_lengths[G];
+}
+
+void pixel_green_lit() {
+  // green = instructions[iptr+1];
+  iptr += i_lengths[GL];
+}
+
+void pixel_green_scr() {
+  // green = reg_read(R_X);
+  iptr += i_lengths[GX];
+}
+
+void pixel_green_idx() {
+  // green = scratchpad[instructions[iptr+1]];
+  iptr += i_lengths[GJ];
+}
+
+/*
+** Instruction implementations (blue)
+*/
+
+void pixel_blue_reg() {
+  // blue = reg_read(instructions[iptr+1]);
+  iptr += i_lengths[B];
+}
+
+void pixel_blue_lit() {
+  // blue = instructions[iptr+1];
+  iptr += i_lengths[BL];
+}
+
+void pixel_blue_scr() {
+  // blue = reg_read(R_X);
+  iptr += i_lengths[BX];
+}
+
+void pixel_blue_idx() {
+  // blue = scratchpad[instructions[iptr+1]];
+  iptr += i_lengths[BJ];
 }
