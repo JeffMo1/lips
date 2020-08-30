@@ -190,7 +190,7 @@ void reg_write(byte reg, byte data) {
 */
 
 void inc_reg() {
-  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1] + 1));
+  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) + 1);
   iptr += 2;
 }
 
