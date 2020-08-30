@@ -2,7 +2,8 @@
 
 byte instructions[256];
 byte iptr;
-
+byte stack[16];
+byte sptr;
 
 // https://github.com/JeffMo1/lips/#registers
 
@@ -31,6 +32,7 @@ const byte Z = 0;
 const byte I = 1;
 const byte IX = 2;
 const byte IJ = 3;
+
 const byte D = 4;
 const byte DX = 5;
 const byte DJ = 6;
@@ -76,10 +78,14 @@ const byte BL = 37;
 const byte BX = 38;
 const byte BJ = 39;
 
+const byte i_lengths[] = {1,  2, 1, 2,  2, 1, 2,  3, 3, 2, 3,  3, 3, 2, 3,  3, 3, 2, 3,   3, 3, 2, 3, 1,
+                          4, 4, 4, 4,  3, 3, 2, 3,  3, 3, 2, 3,  3, 3, 2, 3};
+
 void setup() {
-  // Initialize instruction pointer and program storage.
+  // Initialize IP, SP, and program storage.
   
   iptr = 0;
+  sptr = 0;
   do {
     instructions[iptr] = Z;
     registers[iptr] = 0;
@@ -95,6 +101,7 @@ void loop() {
   byte instruction;
   
   iptr = 0;
+  sptr = 0 ;
   do {
     instruction = instructions[iptr];
     switch (instruction) {
@@ -185,56 +192,93 @@ void reg_write(byte reg, byte data) {
     default:  registers[reg] = data;
   }
 }
+
+void push_ip() {
+  stack[sptr] = iptr;
+  sptr++;
+}
+
+void pop_ip() {
+  iptr = stack[--sptr];
+}
+
 /*
 ** Instruction implementations
 */
 
 void inc_reg() {
   reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) + 1);
-  iptr += 2;
+  iptr += i_lengths[I];
 }
 
 void inc_scr() {
   reg_write(R_X, reg_read(R_X) + 1);
-  iptr += 1;
+  iptr += i_lengths[IX];
 }
 
 void inc_idx() {
   scratchpad[instructions[iptr+1]] += 1;
-  iptr += 2;
+  iptr += i_lengths[IJ];
 }
 
 void dec_reg() {
   reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) - 1);
-  iptr += 2;
+  iptr += i_lengths[D];
 }
 
 void dec_scr() {
   reg_write(R_X, reg_read(R_X) - 1);
-  iptr += 1;
+  iptr += i_lengths[DX];
 }
 
 void dec_idx() {
   scratchpad[instructions[iptr+1]] -= 1;
-  iptr += 2;
+  iptr += i_lengths[DJ];
 }
 
 void load_reg() {
   reg_write(instructions[iptr+1], reg_read(instructions[iptr+2]));
-  iptr += 3;
+  iptr += i_lengths[L];
 }
 
 void load_lit() {
   reg_write(instructions[iptr+1], instructions[iptr+2]);
-  iptr += 3;
+  iptr += i_lengths[LL];
 }
 
 void load_scr() {
   reg_write(instructions[iptr+1], reg_read(R_X));
-  iptr += 2;
+  iptr += i_lengths[LX];
 }
 
 void load_idx() {
   reg_write(instructions[iptr+1], scratchpad[instructions[iptr+2]]);
-  iptr += 3;
+  iptr += i_lengths[LJ];
+}
+
+void skip_while() {
+  byte nest_ct = 0;
+  do {
+    switch (instructions[iptr]) {
+      case W: nest_ct++; break;
+      case WL: nest_ct++; break;
+      case WX: nest_ct++; break;
+      case WJ: nest_ct++; break;
+      case E: nest_ct--; break;
+    }
+    iptr += i_lengths[instructions[iptr]];
+  } while (nest_ct > 0);
+}
+void while_reg() {
+  if (reg_read(instructions[iptr+1]) == reg_read(instructions[iptr+2])) {
+    skip_while();
+  }
+  else {
+    push_ip();
+    iptr += i_lengths[W];
+  }
+}
+
+void end_while() {
+  pop_ip();
 }
