@@ -60,10 +60,10 @@ Code | Name | Parameters | Description
 **LL** | Load lit | target_reg, source_lit | Load the source_lit value into the target_reg
 **LX** | Load scr | target_reg | Load the scratchpad value (X register) into the target_reg
 **LJ** | Load idx | target_reg, source_idx | Load the scratchpad value (indexed by source_idx) into the target_reg
-**W**  | While | basis_reg, compare_reg | Loop while compare_reg != basis_reg (when equal, jump past corresponding E)
-**WL** | While lit | basis_lit, compare_reg | Loop while compare_reg != basis_lit
+**W**  | While | compare_reg, basis_reg | Loop while compare_reg != basis_reg (when equal, jump past corresponding E)
+**WL** | While lit | compare_reg, basis_lit | Loop while compare_reg != basis_lit
 **WX** | While scr | compare_reg | Loop while compare_reg != scratchpad value (X register)
-**WJ** | While idx | basis_idx, compare_reg | Loop while compare_reg != scratchpad value (indexed by source_idx)
+**WJ** | While idx | compare_reg, basis_idx | Loop while compare_reg != scratchpad value (indexed by basis_idx)
 **E**  | End while | | End a preceding W, WL, WI, or WJ loop
 **PL** | Pixel lit | red_lit, green_lit, blue_lit | Update pixel value (indexed by L) with specified literal values
 **PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update pixel value (indexed by L) with specified scratchpad (indexed) values
