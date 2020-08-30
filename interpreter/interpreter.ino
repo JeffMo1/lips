@@ -1,10 +1,28 @@
+// https://github.com/JeffMo1/lips/#program-structure
+
 byte instructions[256];
 byte iptr;
 
+
+// https://github.com/JeffMo1/lips/#registers
+
 byte registers[256];
 
-byte frame_counter;
-byte frame_overflow;
+const byte R_N = 255;
+const byte R_S = 254;
+const byte R_R = 253;
+const byte R_P = 252;
+const byte R_Q = 251;
+
+const byte R_L = 250;
+
+const byte R_F = 249;
+const byte R_V = 248;
+
+const byte R_I = 247;
+const byte R_X = 246;
+
+byte scratchpad[256];
 
 // https://github.com/JeffMo1/lips#instructions
 
@@ -65,13 +83,12 @@ void setup() {
   do {
     instructions[iptr] = Z;
     registers[iptr] = 0;
+    scratchpad[iptr] = 0;
   } while (iptr++ != 0); 
 
   // Load real program here TBD.
   
-  // Set frame counter and overflow to defaults.
-  frame_counter = 0;
-  frame_overflow = 10;
+  init_frame();
 }
 
 void loop() {
@@ -81,13 +98,13 @@ void loop() {
   do {
     instruction = instructions[iptr];
     switch (instruction) {
-      case M:  move_reg(); break;
-      case ML: move_lit(); break;
-      case MI: move_scr(); break;
-      case MJ: move_idx(); break;
+      case L:  load_reg(); break;
+      case LL: load_lit(); break;
+      case LX: load_scr(); break;
+      case LJ: load_idx(); break;
       case W:  while_reg(); break;
       case WL: while_lit(); break;
-      case WI: while_scr(); break;
+      case WX: while_scr(); break;
       case WJ: while_idx(); break;
       case E:  end_while(); break;
       case PL: pixel_lit(); break;
@@ -96,36 +113,49 @@ void loop() {
       case QJ: pixel_add_idx(); break;
       case R:  pixel_red_reg(); break;
       case RL: pixel_red_lit(); break;
-      case RI: pixel_red_scr(); break;
+      case RX: pixel_red_scr(); break;
       case RJ: pixel_red_idx(); break;
       case G:  pixel_green_reg(); break;
       case GL: pixel_green_lit(); break;
-      case GI: pixel_green_scr(); break;
+      case GX: pixel_green_scr(); break;
       case GJ: pixel_green_idx(); break;
       case B:  pixel_blue_reg(); break;
       case BL: pixel_blue_lit(); break;
-      case BI: pixel_blue_scr(); break;
+      case BX: pixel_blue_scr(); break;
       case BJ: pixel_blue_idx(); break;
       default: terminate_frame(); break;   // Includes Z instruction and any unknown instruction.
     }
   } while (instruction != Z);
 
-  frame_counter++;
-  if (frame_counter >= frame_overflow) { frame_counter = 0; }
+  advance_frame();
   
   // possible frame speed adjustment could go here
 }
 
 /*
-** Instruction functions
+** Register management 
 */
 
-void move_reg() {
+void init_frame() {
+  registers[R_F] = 0;
+  registers[R_V] = 10;
+}
+
+void advance_frame() {
+  registers[R_F]++;
+  if (registers[R_F] >= registers[R_V]) { registers[R_V] = 0; }
+}
+
+/*
+** Instruction implementations
+*/
+
+void load_reg() {
   registers[instructions[iptr+1]] = registers[instructions[iptr+2]];
   iptr += 3;
 }
 
-void move_lit() {
+void load_lit() {
   registers[instructions[iptr+1]] = instructions[iptr+2];
   iptr += 3;
 }
