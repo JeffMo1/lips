@@ -1,3 +1,11 @@
+// LED definitions
+
+#include <FastLED.h>
+#define NUM_LEDS 150
+#define DATA_PIN 6
+
+CRGB leds[NUM_LEDS];
+
 // https://github.com/JeffMo1/lips/#program-structure
 
 byte instructions[256];
@@ -98,6 +106,10 @@ const byte i_lengths[] = {
 };
 
 void setup() {
+  // Initialize FastLED
+
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+
   // Initialize IP, SP, and program storage.
   
   iptr = 0;
@@ -167,8 +179,7 @@ void loop() {
   } while (instruction != Z);
 
   advance_frame();
-  
-  // possible frame speed adjustment could go here
+  delay(1000); // possible frame speed adjustment could go here
 }
 
 /*
@@ -177,7 +188,7 @@ void loop() {
 
 void init_frame() {
   registers[R_F] = 0;
-  registers[R_V] = 10;
+  registers[R_V] = 16;
 }
 
 void advance_frame() {
@@ -190,7 +201,7 @@ void check_frame_overflow() {
 }
 
 void init_system() {
-  registers[R_N] = 150;  // TBD: Should use the LED const for the library
+  registers[R_N] = NUM_LEDS;
   registers[R_S] = 0;    // TBD: Read this from hardware pins
   registers[R_R] = random(256);
   registers[R_P] = 0;
@@ -236,7 +247,7 @@ void pop_ip() {
 */
 
 void terminate_frame() {
-  // TBD
+  FastLED.show();
 }
 
 /*
@@ -412,23 +423,29 @@ void end_while() {
 */
 
 void pixel_reg() {
-  // red = reg_read(instructions[iptr+1]);
-  // green = reg_read(instructions[iptr+2]);
-  // blue = reg_read(instructions[iptr+3]);
+  leds[reg_read(R_L)].setRGB(
+    reg_read(instructions[iptr+1]),
+    reg_read(instructions[iptr+2]),
+    reg_read(instructions[iptr+3])
+  );
   iptr += i_lengths[P];
 }
 
 void pixel_lit() {
-  // red = instructions[iptr+1];
-  // green = instructions[iptr+2];
-  // blue = instructions[iptr+3];
+  leds[reg_read(R_L)].setRGB(
+    instructions[iptr+1],
+    instructions[iptr+2],
+    instructions[iptr+3]
+  );
   iptr += i_lengths[PL];
 }
 
 void pixel_idx() {
-  // red = scratchpad[instructions[iptr+1]];
-  // green = scratchpad[instructions[iptr+2]];
-  // blue = scratchpad[instructions[iptr+3]];
+  leds[reg_read(R_L)].setRGB(
+    scratchpad[instructions[iptr+1]],
+    scratchpad[instructions[iptr+2]],
+    scratchpad[instructions[iptr+3]]
+  );
   iptr += i_lengths[PJ];
 }
 
@@ -458,22 +475,22 @@ void pixel_add_idx() {
 */
 
 void pixel_red_reg() {
-  // red = reg_read(instructions[iptr+1]);
+  leds[reg_read(R_L)].r = reg_read(instructions[iptr+1]);
   iptr += i_lengths[R];
 }
 
 void pixel_red_lit() {
-  // red = instructions[iptr+1];
+  leds[reg_read(R_L)].r = instructions[iptr+1];
   iptr += i_lengths[RL];
 }
 
 void pixel_red_scr() {
-  // red = reg_read(R_X);
+  leds[reg_read(R_L)].r = reg_read(R_X);
   iptr += i_lengths[RX];
 }
 
 void pixel_red_idx() {
-  // red = scratchpad[instructions[iptr+1]];
+  leds[reg_read(R_L)].r = scratchpad[instructions[iptr+1]];
   iptr += i_lengths[RJ];
 }
 
@@ -482,22 +499,22 @@ void pixel_red_idx() {
 */
 
 void pixel_green_reg() {
-  // green = reg_read(instructions[iptr+1]);
+  leds[reg_read(R_L)].g = reg_read(instructions[iptr+1]);
   iptr += i_lengths[G];
 }
 
 void pixel_green_lit() {
-  // green = instructions[iptr+1];
+  leds[reg_read(R_L)].g = instructions[iptr+1];
   iptr += i_lengths[GL];
 }
 
 void pixel_green_scr() {
-  // green = reg_read(R_X);
+  leds[reg_read(R_L)].g = reg_read(R_X);
   iptr += i_lengths[GX];
 }
 
 void pixel_green_idx() {
-  // green = scratchpad[instructions[iptr+1]];
+  leds[reg_read(R_L)].g = scratchpad[instructions[iptr+1]];
   iptr += i_lengths[GJ];
 }
 
@@ -506,21 +523,21 @@ void pixel_green_idx() {
 */
 
 void pixel_blue_reg() {
-  // blue = reg_read(instructions[iptr+1]);
+  leds[reg_read(R_L)].b = reg_read(instructions[iptr+1]);
   iptr += i_lengths[B];
 }
 
 void pixel_blue_lit() {
-  // blue = instructions[iptr+1];
+  leds[reg_read(R_L)].b = instructions[iptr+1];
   iptr += i_lengths[BL];
 }
 
 void pixel_blue_scr() {
-  // blue = reg_read(R_X);
+  leds[reg_read(R_L)].b = reg_read(R_X);
   iptr += i_lengths[BX];
 }
 
 void pixel_blue_idx() {
-  // blue = scratchpad[instructions[iptr+1]];
+  leds[reg_read(R_L)].b = scratchpad[instructions[iptr+1]];
   iptr += i_lengths[BJ];
 }
