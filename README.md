@@ -86,3 +86,4 @@ Code | Name | Parameters | Description
 **BL** | Pixel blue lit | blue_lit | Update LED &#x1F535; at position R_L with blue_lit value
 **BX** | Pixel blue scr | | Update LED &#x1F535; at position R_L with scratchpad value (R_X)
 **BJ** | Pixel blue idx | blue_idx | Update LED &#x1F535; at position R_L with scratchpad value (indexed by blue_idx)
+**Y**  | Set yptr | | Set this to mark the "reentry" point for second (and subsequent) executions

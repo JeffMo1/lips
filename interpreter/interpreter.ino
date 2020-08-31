@@ -2,7 +2,7 @@
 
 #include <FastLED.h>
 #define NUM_LEDS 150
-#define DATA_PIN 6
+#define DATA_PIN 12
 
 CRGB leds[NUM_LEDS];
 
@@ -10,6 +10,8 @@ CRGB leds[NUM_LEDS];
 
 byte instructions[256];
 byte iptr;
+byte yptr;
+
 byte stack[16];
 byte sptr;
 
@@ -90,6 +92,8 @@ const byte BL = 39;
 const byte BX = 40;
 const byte BJ = 41;
 
+const byte Y = 42;
+
 const byte i_lengths[] = {
   1,                    // Z
   2, 1, 2,              // I
@@ -102,7 +106,8 @@ const byte i_lengths[] = {
   4, 4, 4,              // Q
   3, 3, 2, 3,           // R
   3, 3, 2, 3,           // G
-  3, 3, 2, 3            // B
+  3, 3, 2, 3,           // B
+  1,                    // Y
 };
 
 void setup() {
@@ -113,6 +118,7 @@ void setup() {
   // Initialize IP, SP, and program storage.
   
   iptr = 0;
+  yptr = 0;
   sptr = 0;
   do {
     instructions[iptr] = Z;
@@ -121,17 +127,68 @@ void setup() {
   } while (iptr++ != 0); 
 
   // Load real program here TBD.
-  
+
+  instructions[0] = 16;   // LL
+  instructions[1] = 0;    // reg 0
+  instructions[2] = 40;   // lit 40
+  instructions[3] = 42;   // Y
+  instructions[4] = 15;   // L
+  instructions[5] = 249;  // R_L LED Index
+  instructions[6] = 255;  // R_N LED Count
+  instructions[7] = 20;   // WL
+  instructions[8] = 249;  // R_L LED Index
+  instructions[9] = 0;    // lit 0
+  instructions[10]= 15;   // L
+  instructions[11]= 1;    // reg 1
+  instructions[12]= 249;  // R_L LED Index
+  instructions[13]= 7;    // A
+  instructions[14]= 1;    // reg 1
+  instructions[15]= 0;    // reg 0
+  instructions[16]= 24;   // P
+  instructions[17]= 1;    // reg 1
+  instructions[18]= 250;  // R_Z Zero
+  instructions[19]= 1;    // reg 1
+  instructions[20]= 4;    // D
+  instructions[21]= 249;  // R_L LED Index
+  instructions[22]= 23;   // E
+  instructions[23]= 1;    // I
+  instructions[24]= 0;    // reg 0
+  instructions[25]= 0;    // Z
+   
+  init_system();
   init_frame();
+  
+  delay(1000);
+}
+
+void ins(byte data, int ms) {
+  for (int x=0; x<8; x++) {
+    leds[x] = bitRead(data, x) ? CRGB::Red : CRGB::Black;
+  }
+  FastLED.show();
+  delay(ms);
+  for (int x=0; x<8; x++) { leds[x] = CRGB::Black; }
+  FastLED.show();
+}
+
+void param(byte data, int ms) {
+  for (int x=0; x<8; x++) {
+    leds[x] = bitRead(data, x) ? CRGB::Green : CRGB::Black;
+  }
+  FastLED.show();
+  delay(ms);
+  for (int x=0; x<8; x++) { leds[x] = CRGB::Black; }
+  FastLED.show();  
 }
 
 void loop() {
   byte instruction;
   
-  iptr = 0;
+  iptr = yptr;
   sptr = 0 ;
   do {
     instruction = instructions[iptr];
+    // debug: ins(instruction, 500);
     switch (instruction) {
       case I:  inc_reg(); break;
       case IX: inc_scr(); break;
@@ -174,12 +231,13 @@ void loop() {
       case BL: pixel_blue_lit(); break;
       case BX: pixel_blue_scr(); break;
       case BJ: pixel_blue_idx(); break;
+      case Y:  set_yptr(); break;
       default: terminate_frame(); break;   // Includes Z instruction and any unknown instruction.
     }
   } while (instruction != Z);
 
   advance_frame();
-  delay(1000); // possible frame speed adjustment could go here
+  delay(5); // possible frame speed adjustment could go here
 }
 
 /*
@@ -210,15 +268,15 @@ void init_system() {
 }
 
 byte reg_read(byte reg) {
-  byte value;
+  byte data;
 
   switch (reg) {
-    case R_R: value = registers[R_R]; registers[R_R] = random(256); break;
-    case R_X: value = scratchpad[R_I]; break;
-    case R_Z: value = 0; break;
-    default:  value = registers[reg];
+    case R_R: data = registers[R_R]; registers[R_R] = random(256); break;
+    case R_X: data = scratchpad[R_I]; break;
+    case R_Z: data = 0; break;
+    default:  data = registers[reg];
   }
-  return value;
+  return data;
 }
 
 void reg_write(byte reg, byte data) {
@@ -540,4 +598,13 @@ void pixel_blue_scr() {
 void pixel_blue_idx() {
   leds[reg_read(R_L)].b = scratchpad[instructions[iptr+1]];
   iptr += i_lengths[BJ];
+}
+
+/*
+** Instruction implementations (miscellaneous)
+*/
+
+void set_yptr() {
+  yptr = iptr + i_lengths[Y];
+  iptr = yptr;
 }
