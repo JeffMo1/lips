@@ -22,17 +22,19 @@ byte registers[256];
 const byte R_N = 255;
 const byte R_S = 254;
 const byte R_R = 253;
-const byte R_P = 252;
-const byte R_Q = 251;
-const byte R_Z = 250;
+const byte R_U = 252;
+const byte R_V = 251;
+const byte R_P = 250;
+const byte R_Q = 249;
+const byte R_Z = 248;
 
-const byte R_L = 249;
+const byte R_L = 247;
 
-const byte R_F = 248;
-const byte R_V = 247;
+const byte R_F = 246;
+const byte R_O = 245;
 
-const byte R_I = 246;
-const byte R_X = 245;
+const byte R_I = 244;
+const byte R_X = 243;
 
 byte scratchpad[256];
 
@@ -133,14 +135,14 @@ void setup() {
   instructions[2] = 40;   // lit 40
   instructions[3] = 42;   // Y
   instructions[4] = 15;   // L
-  instructions[5] = 249;  // R_L LED Index
+  instructions[5] = 247;  // R_L LED Index
   instructions[6] = 255;  // R_N LED Count
   instructions[7] = 20;   // WL
-  instructions[8] = 249;  // R_L LED Index
+  instructions[8] = 247;  // R_L LED Index
   instructions[9] = 0;    // lit 0
   instructions[10]= 15;   // L
   instructions[11]= 1;    // reg 1
-  instructions[12]= 249;  // R_L LED Index
+  instructions[12]= 247;  // R_L LED Index
   instructions[13]= 7;    // A
   instructions[14]= 1;    // reg 1
   instructions[15]= 0;    // reg 0
@@ -149,7 +151,7 @@ void setup() {
   instructions[18]= 250;  // R_Z Zero
   instructions[19]= 1;    // reg 1
   instructions[20]= 4;    // D
-  instructions[21]= 249;  // R_L LED Index
+  instructions[21]= 247;  // R_L LED Index
   instructions[22]= 23;   // E
   instructions[23]= 1;    // I
   instructions[24]= 0;    // reg 0
@@ -246,7 +248,7 @@ void loop() {
 
 void init_frame() {
   registers[R_F] = 0;
-  registers[R_V] = 16;
+  registers[R_O] = 16;
 }
 
 void advance_frame() {
@@ -255,13 +257,15 @@ void advance_frame() {
 }
 
 void check_frame_overflow() {
-  if (registers[R_F] >= registers[R_V]) { registers[R_V] = 0; }
+  if (registers[R_F] >= registers[R_O]) { registers[R_F] = 0; }
 }
 
 void init_system() {
   registers[R_N] = NUM_LEDS;
   registers[R_S] = 0;    // TBD: Read this from hardware pins
   registers[R_R] = random(256);
+  registers[R_U] = 0;
+  registers[R_V] = 255;
   registers[R_P] = 0;
   registers[R_Q] = 0;
   registers[R_Z] = 0;
@@ -271,7 +275,7 @@ byte reg_read(byte reg) {
   byte data;
 
   switch (reg) {
-    case R_R: data = registers[R_R]; registers[R_R] = random(256); break;
+    case R_R: data = registers[R_R]; registers[R_R] = random(registers[R_U], registers[R_V] + 1); break;
     case R_X: data = scratchpad[R_I]; break;
     case R_Z: data = 0; break;
     default:  data = registers[reg];
