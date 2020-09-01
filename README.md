@@ -16,35 +16,37 @@ Code | Index | Name | Access | Notes
 **R_N** | 255 | LED Count | R/O | Number of LEDs in the strip (defined at compile time)
 **R_S** | 254 | Strip ID  | R/O | Convention is zero-based, sequential (defined by hardware configuration)
 **R_R** | 253 | Random    | R/O | Random byte value on each read, 0-255
-**R_P** | 252 | Mult LSB  | R/W | Receives least significant byte of result during multiplications
-**R_Q** | 251 | Mult MSB  | R/W | Receives most significant byte of result during multiplications
-**R_Z** | 250 | Zero      | R/O | Always returns zero
+**R_U** | 252 | Rand LB   | R/W | Randomizer lower bound, defaults to 0
+**R_V** | 251 | Rand UB   | R/W | Randomizer upper bound, defaults to 255
+**R_P** | 250 | Mult LSB  | R/W | Receives least significant byte of result during multiplications
+**R_Q** | 249 | Mult MSB  | R/W | Receives most significant byte of result during multiplications
+**R_Z** | 248 | Zero      | R/O | Always returns zero
 
 _LED register_
 
 Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
-**R_L** | 250 | LED Index | R/W | Current working LED index (0..**R_N**-1), used for **P**, **Q**, **R**, **G**, **B** instruction families
+**R_L** | 247 | LED Index | R/W | Current working LED index (0..**R_N**-1), used for **P**, **Q**, **R**, **G**, **B** instruction families
 
 _animation registers_
 
 Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
-**R_F** | 249 | Frame Counter  | R/O | Current working frame, initially zero, auto-incremented by interpreter after each frame
-**R_V** | 248 | Frame Overflow | R/W | After each frame, frame counter is reset to zero if >= this overflow value
+**R_F** | 246 | Frame Counter  | R/O | Current working frame, initially zero, auto-incremented by interpreter after each frame
+**R_O** | 245 | Frame Overflow | R/W | After each frame, frame counter is reset to zero if >= this overflow value
 
 _scratchpad registers_
 
 Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
-**R_I** | 247 | Scratchpad Index | R/W | Current working index into scratchpad data
-**R_X** | 246 | Scratchpad Data  | R/W | Read or write the byte at current indexed scratchpad location
+**R_I** | 244 | Scratchpad Index | R/W | Current working index into scratchpad data
+**R_X** | 243 | Scratchpad Data  | R/W | Read or write the byte at current indexed scratchpad location
 
 # Instructions
 
 Code | Name | Parameters | Description
 ---- | ---- | ---------- | -----------
-**Z**  | Terminate frame | | Terminate current render frame and advance, using R_F and R_V
+**Z**  | Terminate frame | | Terminate current render frame and advance, using R_F and R_O
 **I**  | Increment | increment_reg | Add one (with rollover) to the increment_reg
 **IX** | Increment scr | | Add one (with rollover) to the scratchpad value (R_X)
 **IJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
