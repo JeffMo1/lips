@@ -18,8 +18,8 @@ Code | Index | Name | Access | Notes
 **R_R** | 253 | Random    | R/O | Random byte value on each read, 0-255
 **R_U** | 252 | Rand LB   | R/W | Randomizer lower bound, defaults to 0
 **R_V** | 251 | Rand UB   | R/W | Randomizer upper bound, defaults to 255
-**R_P** | 250 | Mult LSB  | R/W | Receives least significant byte of result during multiplications
-**R_Q** | 249 | Mult MSB  | R/W | Receives most significant byte of result during multiplications
+**R_P** | 250 | Mult LSB  | R/W | Receives least significant byte of result during multiplications, remainder during divisions
+**R_Q** | 249 | Mult MSB  | R/W | Receives most significant byte of result during multiplications, quotient during divisions
 **R_Z** | 248 | Zero      | R/O | Always returns zero
 
 _LED register_
@@ -46,13 +46,13 @@ Code | Index | Name | Access | Notes
 
 Code | Name | Parameters | Description
 ---- | ---- | ---------- | -----------
-**Z**  | Terminate frame | | Terminate current render frame and advance, using R_F and R_O
-**I**  | Increment | increment_reg | Add one (with rollover) to the increment_reg
-**IX** | Increment scr | | Add one (with rollover) to the scratchpad value (R_X)
-**IJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
-**D**  | Decrement | decrement_reg | Subtract one (with rollover) from the decrement_reg
-**DX** | Decrement scr | | Subtract one (with rollover) from the scratchpad value (R_X)
-**DJ** | Decrement idx | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
+**Z**   | Terminate frame | | Terminate current render frame and advance, using R_F and R_O
+**IC**  | Increment | increment_reg | Add one (with rollover) to the increment_reg
+**ICX** | Increment scr | | Add one (with rollover) to the scratchpad value (R_X)
+**ICJ** | Increment idx | increment_idx | Add one (with rollover) to the scratchpad value (indexed by increment_idx)
+**DC**  | Decrement | decrement_reg | Subtract one (with rollover) from the decrement_reg
+**DCX** | Decrement scr | | Subtract one (with rollover) from the scratchpad value (R_X)
+**DCJ** | Decrement idx | decrement_idx | Subtract one (with rollover) from the scratchpad value (indexed by decrement_idx)
 **A**  | Add | basis_reg, addend_reg | Add basis_reg + addend_reg, results to basis_reg
 **AL** | Add lit | basis_reg, addend_lit | Add basis_reg + addend_reg, results to basis_reg
 **AX** | Add scr | basis_reg | Add basis_reg + scratchpad value (R_X), results to basis_reg
@@ -61,6 +61,10 @@ Code | Name | Parameters | Description
 **ML** | Multiply lit | basis_reg, factor_lit | Multiply basis_reg x factor_lit literal value, results to (R_Q, R_P)
 **MX** | Multiply scr | basis_reg | Multiply basis_reg x scratchpad value (R_X), results to (R_Q, R_P)
 **MJ** | Multiply idx | basis_reg, factor_idx | Multiply basis_reg x scratchpad value (indexed by factor_idx), results to (R_Q, R_P)
+**DV**  | Divide | basis_reg, divisor_reg | Divide basis_reg / divisor_reg, results to (R_Q, R_P)
+**DVL** | Divide lit | basis_reg, divisor_lit | Divide basis_reg / divisior_lit, results to (R_Q, R_P)
+**DVX** | Divide scr | basis_reg | Divide basis_reg / scratchpad value (R_X), results to (R_Q, R_P)
+**DVJ** | Divide idx | basis_reg, divisor_idx | Divide basis_reg / scratchpad value (indexed by divisor_idx), results to (R_Q, R_P)
 **L**  | Load | target_reg, source_reg | Load the source_reg value into the target_reg
 **LL** | Load lit | target_reg, source_lit | Load the source_lit value into the target_reg
 **LX** | Load scr | target_reg | Load the scratchpad value (R_X) into the target_reg

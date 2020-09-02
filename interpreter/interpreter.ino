@@ -8,7 +8,6 @@ CRGB leds[NUM_LEDS];
 
 // https://github.com/JeffMo1/lips/#program-structure
 
-byte instructions[256];
 byte iptr;
 byte yptr;
 
@@ -42,13 +41,13 @@ byte scratchpad[256];
 
 const byte Z = 0;
 
-const byte I = 1;
-const byte IX = 2;
-const byte IJ = 3;
+const byte IC = 1;
+const byte ICX = 2;
+const byte ICJ = 3;
 
-const byte D = 4;
-const byte DX = 5;
-const byte DJ = 6;
+const byte DC = 4;
+const byte DCX = 5;
+const byte DCJ = 6;
 
 const byte A = 7;
 const byte AL = 8;
@@ -60,48 +59,54 @@ const byte ML = 12;
 const byte MX = 13;
 const byte MJ = 14;
 
-const byte L = 15;
-const byte LL = 16;
-const byte LX = 17;
-const byte LJ = 18;
+const byte DV = 15;
+const byte DVL = 16;
+const byte DVX = 17;
+const byte DVJ = 18;
 
-const byte W = 19;
-const byte WL = 20;
-const byte WX = 21;
-const byte WJ = 22;
-const byte E = 23;
+const byte L = 19;
+const byte LL = 20;
+const byte LX = 21;
+const byte LJ = 22;
 
-const byte P = 24;
-const byte PL = 25;
-const byte PJ = 26;
+const byte W = 23;
+const byte WL = 24;
+const byte WX = 25;
+const byte WJ = 26;
+const byte E = 27;
 
-const byte Q = 27;
-const byte QL = 28;
-const byte QJ = 29;
+const byte P = 28;
+const byte PL = 29;
+const byte PJ = 30;
 
-const byte R = 30;
-const byte RL = 31;
-const byte RX = 32;
-const byte RJ = 33;
+const byte Q = 31;
+const byte QL = 32;
+const byte QJ = 33;
 
-const byte G = 34;
-const byte GL = 35;
-const byte GX = 36;
-const byte GJ = 37;
+const byte R = 34;
+const byte RL = 35;
+const byte RX = 36;
+const byte RJ = 37;
 
-const byte B = 38;
-const byte BL = 39;
-const byte BX = 40;
-const byte BJ = 41;
+const byte G = 38;
+const byte GL = 39;
+const byte GX = 40;
+const byte GJ = 41;
 
-const byte Y = 42;
+const byte B = 42;
+const byte BL = 43;
+const byte BX = 44;
+const byte BJ = 45;
+
+const byte Y = 46;
 
 const byte i_lengths[] = {
   1,                    // Z
-  2, 1, 2,              // I
-  2, 1, 2,              // D
+  2, 1, 2,              // IC
+  2, 1, 2,              // DC
   3, 3, 2, 3,           // A
   3, 3, 2, 3,           // M
+  3, 3, 2, 3,           // DV
   3, 3, 2, 3,           // L
   3, 3, 2, 3, 1,        // W
   4, 4, 4,              // P
@@ -111,6 +116,32 @@ const byte i_lengths[] = {
   3, 3, 2, 3,           // B
   1,                    // Y
 };
+
+
+byte instructions[256] = {
+    LL, R_V, 8,
+    L, 0, R_R,
+    L, 1, R_R,
+    L, 2, R_R,
+    Y,
+    LL, R_L, 0,
+    W, R_L, R_N,
+      L, 10, 0,
+      A, 10, R_F,
+      ML, 10, 10,
+      L, 10, R_P,
+      L, 11, 1,
+      A, 11, R_F,
+      ML, 11, 10,
+      L, 11, R_P,
+      L, 12, 2,
+      A, 12, R_F,
+      ML, 12, 10,
+      L, 12, R_P,
+      P, 10, 11, 12,
+      IC, R_L,
+    E,
+    Z};
 
 void setup() {
   // Initialize FastLED
@@ -123,39 +154,9 @@ void setup() {
   yptr = 0;
   sptr = 0;
   do {
-    instructions[iptr] = Z;
     registers[iptr] = 0;
     scratchpad[iptr] = 0;
   } while (iptr++ != 0); 
-
-  // Load real program here TBD.
-
-  instructions[0] = 16;   // LL
-  instructions[1] = 0;    // reg 0
-  instructions[2] = 40;   // lit 40
-  instructions[3] = 42;   // Y
-  instructions[4] = 15;   // L
-  instructions[5] = 247;  // R_L LED Index
-  instructions[6] = 255;  // R_N LED Count
-  instructions[7] = 20;   // WL
-  instructions[8] = 247;  // R_L LED Index
-  instructions[9] = 0;    // lit 0
-  instructions[10]= 15;   // L
-  instructions[11]= 1;    // reg 1
-  instructions[12]= 247;  // R_L LED Index
-  instructions[13]= 7;    // A
-  instructions[14]= 1;    // reg 1
-  instructions[15]= 0;    // reg 0
-  instructions[16]= 24;   // P
-  instructions[17]= 1;    // reg 1
-  instructions[18]= 250;  // R_Z Zero
-  instructions[19]= 1;    // reg 1
-  instructions[20]= 4;    // D
-  instructions[21]= 247;  // R_L LED Index
-  instructions[22]= 23;   // E
-  instructions[23]= 1;    // I
-  instructions[24]= 0;    // reg 0
-  instructions[25]= 0;    // Z
    
   init_system();
   init_frame();
@@ -192,12 +193,12 @@ void loop() {
     instruction = instructions[iptr];
     // debug: ins(instruction, 500);
     switch (instruction) {
-      case I:  inc_reg(); break;
-      case IX: inc_scr(); break;
-      case IJ: inc_idx(); break;
-      case D:  dec_reg(); break;
-      case DX: dec_scr(); break;
-      case DJ: dec_idx(); break;
+      case IC:  inc_reg(); break;
+      case ICX: inc_scr(); break;
+      case ICJ: inc_idx(); break;
+      case DC:  dec_reg(); break;
+      case DCX: dec_scr(); break;
+      case DCJ: dec_idx(); break;
       case A:  add_reg(); break;
       case AL: add_lit(); break;
       case AX: add_scr(); break;
@@ -206,6 +207,10 @@ void loop() {
       case ML: mult_lit(); break;
       case MX: mult_scr(); break;
       case MJ: mult_idx(); break;
+      case DV:  div_reg(); break;
+      case DVL: div_lit(); break;
+      case DVX: div_scr(); break;
+      case DVJ: div_idx(); break;
       case L:  load_reg(); break;
       case LL: load_lit(); break;
       case LX: load_scr(); break;
@@ -396,6 +401,34 @@ void mult_idx() {
   reg_write(R_P, lowByte(product));
   reg_write(R_Q, highByte(product));
   iptr += i_lengths[MJ];
+}
+
+void div_reg() {
+  byte basis = reg_read(instructions[iptr+1]);
+  byte divisor = reg_read(instructions[iptr+2]);
+  reg_write(R_P, basis % divisor);
+  reg_write(R_Q, basis / divisor);
+}
+
+void div_lit() {
+  byte basis = reg_read(instructions[iptr+1]);
+  byte divisor = instructions[iptr+1];
+  reg_write(R_P, basis % divisor);
+  reg_write(R_Q, basis / divisor);
+}
+
+void div_scr() {
+  byte basis = reg_read(instructions[iptr+1]);
+  byte divisor = reg_read(R_X);
+  reg_write(R_P, basis % divisor);
+  reg_write(R_Q, basis / divisor);
+}
+
+void div_idx() {
+  byte basis = reg_read(instructions[iptr+1]);
+  byte divisor = scratchpad[instructions[iptr+2]];
+  reg_write(R_P, basis % divisor);
+  reg_write(R_Q, basis / divisor);
 }
 
 void load_reg() {
