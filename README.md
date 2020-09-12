@@ -34,13 +34,14 @@ Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
 **R_F** | 246 | Frame Counter  | R/O | Current working frame, initially zero, auto-incremented by interpreter after each frame
 **R_O** | 245 | Frame Overflow | R/W | After each frame, frame counter is reset to zero if >= this overflow value
+**R_D** | 244 | Frame Delay    | R/W | After each frame, milliseconds of delay are added, based on this value
 
 _scratchpad registers_
 
 Code | Index | Name | Access | Notes
 ---- | ----- | ---- | ------ | -----
-**R_I** | 244 | Scratchpad Index | R/W | Current working index into scratchpad data
-**R_X** | 243 | Scratchpad Data  | R/W | Read or write the byte at current indexed scratchpad location
+**R_I** | 243 | Scratchpad Index | R/W | Current working index into scratchpad data
+**R_X** | 242 | Scratchpad Data  | R/W | Read or write the byte at current indexed scratchpad location
 
 # Instructions
 
