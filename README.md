@@ -76,9 +76,10 @@ Code | Name | Parameters | Description
 **WJ** | While idx | compare_reg, basis_idx | Loop while compare_reg != scratchpad value (indexed by basis_idx)
 **EW** | End while | | End a preceding W, WL, WI, or WJ loop
 **P**  | Pixel | red_reg, green_reg, blue_reg | Update &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified register values
-**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified literal values
+**PB** | Pixel blk | | Update LED :black_circle: at position R_L
+**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED :red_circle:&#x1F7E2;&#x1F535; at position R_L with specified literal values
 **PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L with specified scratchpad (indexed) values
-**PH** | Pixel HSV | hue_reg, sat_reg, val_reg | Update LED **&#x24BD;&#x24C8;&#x24CB;** at position R_L with specified register values
+**PH** | Pixel HSV | hue_reg, sat_reg, val_reg | Update LED &#x24BD;&#x24C8;&#x24CB; at position R_L with specified register values
 **Q**  | Pixel add | red_reg, green_reg, blue_reg | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified register values
 **QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified literal values
 **QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED &#x1F534;&#x1F7E2;&#x1F535; at position R_L by adding specified scratchpad (indexed) values
