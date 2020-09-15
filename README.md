@@ -75,14 +75,14 @@ Code | Name | Parameters | Description
 **WX** | While scr | compare_reg | Loop while compare_reg != scratchpad value (R_X)
 **WJ** | While idx | compare_reg, basis_idx | Loop while compare_reg != scratchpad value (indexed by basis_idx)
 **EW** | End while | | End a preceding W, WL, WI, or WJ loop
-**P**  | Pixel | red_reg, green_reg, blue_reg | Update :red_circle::green_circle::blue_circle: at position R_L with specified register values
+**P**  | Pixel | red_reg, green_reg, blue_reg | Update :red_circle::green_circle::large_blue_circle: at position R_L with specified register values
 **PB** | Pixel blk | | Update LED :black_circle: at position R_L
-**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED :red_circle::green_circle::blue_circle: at position R_L with specified literal values
-**PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED :red_circle::green_circle::blue_circle: at position R_L with specified scratchpad (indexed) values
+**PL** | Pixel lit | red_lit, green_lit, blue_lit | Update LED :red_circle::green_circle::large_blue_circle: at position R_L with specified literal values
+**PJ** | Pixel idx | red_idx, green_idx, blue_idx | Update LED :red_circle::green_circle::large_blue_circle: at position R_L with specified scratchpad (indexed) values
 **PH** | Pixel HSV | hue_reg, sat_reg, val_reg | Update LED &#x24BD;&#x24C8;&#x24CB; at position R_L with specified register values
-**Q**  | Pixel add | red_reg, green_reg, blue_reg | Update LED :red_circle::green_circle::blue_circle: at position R_L by adding specified register values
-**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED :red_circle::green_circle::blue_circle: at position R_L by adding specified literal values
-**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED :red_circle::green_circle::blue_circle: at position R_L by adding specified scratchpad (indexed) values
+**Q**  | Pixel add | red_reg, green_reg, blue_reg | Update LED :red_circle::green_circle::large_blue_circle: at position R_L by adding specified register values
+**QL** | Pixel add lit | red_lit, green_lit, blue_lit | Update LED :red_circle::green_circle::large_blue_circle: at position R_L by adding specified literal values
+**QJ** | Pixel add idx | red_idx, green_idx, blue_idx | Update LED :red_circle::green_circle::large_blue_circle: at position R_L by adding specified scratchpad (indexed) values
 **R**  | Pixel red | red_reg | Update LED :red_circle: at position R_L with red_reg value
 **RL** | Pixel red lit | red_lit | Update LED :red_circle: at position R_L with red_lit value
 **RX** | Pixel red scr | | Update LED :red_circle: at position R_L with scratchpad value (R_X)
@@ -91,8 +91,8 @@ Code | Name | Parameters | Description
 **GL** | Pixel green lit | green_lit | Update LED :green_circle: at position R_L with green_lit value
 **GX** | Pixel green scr | | Update LED :green_circle: at position R_L with scratchpad value (R_X)
 **GJ** | Pixel green idx | green_idx | Update LED :green_circle: at position R_L with scratchpad value (indexed by green_idx)
-**B**  | Pixel blue | blue_reg | Update LED :blue_circle: at position R_L with blue_reg value
-**BL** | Pixel blue lit | blue_lit | Update LED :blue_circle: at position R_L with blue_lit value
-**BX** | Pixel blue scr | | Update LED :blue_circle: at position R_L with scratchpad value (R_X)
-**BJ** | Pixel blue idx | blue_idx | Update LED :blue_circle: at position R_L with scratchpad value (indexed by blue_idx)
+**B**  | Pixel blue | blue_reg | Update LED :large_blue_circle: at position R_L with blue_reg value
+**BL** | Pixel blue lit | blue_lit | Update LED :large_blue_circle: at position R_L with blue_lit value
+**BX** | Pixel blue scr | | Update LED :large_blue_circle: at position R_L with scratchpad value (R_X)
+**BJ** | Pixel blue idx | blue_idx | Update LED :large_blue_circle: at position R_L with scratchpad value (indexed by blue_idx)
 **Y**  | Set yptr | | Set this to mark the "reentry" point for second (and subsequent) executions
