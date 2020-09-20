@@ -1,6 +1,8 @@
 #ifndef LIPS_REGISTERS_H
 #define LIPS_REGISTERS_H
 
+// https://github.com/JeffMo1/lips/#registers
+
 const byte R_N = 255;
 const byte R_S = 254;
 const byte R_R = 253;
