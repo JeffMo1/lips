@@ -8,33 +8,22 @@ CRGB leds[NUM_LEDS];
 
 // https://github.com/JeffMo1/lips/#program-structure
 
-byte iptr;
-byte yptr;
+byte instruction;
+byte instruction_length;
+word iptr;
+word yptr;
+word lptr;
 
-byte stack[16];
+word stack[16];
 byte sptr;
+
+bool run_program;
 
 // https://github.com/JeffMo1/lips/#registers
 
+#include "registers.h"
+
 byte registers[256];
-
-const byte R_N = 255;
-const byte R_S = 254;
-const byte R_R = 253;
-const byte R_U = 252;
-const byte R_V = 251;
-const byte R_P = 250;
-const byte R_Q = 249;
-const byte R_Z = 248;
-
-const byte R_L = 247;
-
-const byte R_F = 246;
-const byte R_O = 245;
-
-const byte R_I = 244;
-const byte R_X = 243;
-
 byte scratchpad[256];
 
 // https://github.com/JeffMo1/lips#instructions
@@ -64,41 +53,59 @@ const byte DVL = 16;
 const byte DVX = 17;
 const byte DVJ = 18;
 
-const byte L = 19;
-const byte LL = 20;
-const byte LX = 21;
-const byte LJ = 22;
+const byte DM = 19;
+const byte DML = 20;
+const byte DMX = 21; // tbi
+const byte DMJ = 22; // tbi
 
-const byte W = 23;
-const byte WL = 24;
-const byte WX = 25;
-const byte WJ = 26;
-const byte E = 27;
+const byte L = 23;
+const byte LL = 24;
+const byte LX = 25;
+const byte LJ = 26;
 
-const byte P = 28;
-const byte PL = 29;
-const byte PJ = 30;
+const byte I = 27;
+const byte IL = 28;
+const byte IX = 29; // tbi
+const byte IJ = 30; // tbi
 
-const byte Q = 31;
-const byte QL = 32;
-const byte QJ = 33;
+const byte U = 31;  // tbi
+const byte UL = 32; // tbi
+const byte UX = 33; // tbi
+const byte UJ = 34; // tbi
+const byte EI = 35; // tbi
 
-const byte R = 34;
-const byte RL = 35;
-const byte RX = 36;
-const byte RJ = 37;
+const byte W = 36;
+const byte WL = 37;
+const byte WX = 38;
+const byte WJ = 39;
+const byte EW = 40;
 
-const byte G = 38;
-const byte GL = 39;
-const byte GX = 40;
-const byte GJ = 41;
+const byte P = 41;
+const byte PB = 42;
+const byte PL = 43;
+const byte PJ = 44;
+const byte PH = 45;
 
-const byte B = 42;
-const byte BL = 43;
-const byte BX = 44;
-const byte BJ = 45;
+const byte Q = 46;
+const byte QL = 47;
+const byte QJ = 48;
 
-const byte Y = 46;
+const byte R = 49;
+const byte RL = 50;
+const byte RX = 51;
+const byte RJ = 52;
+
+const byte G = 53;
+const byte GL = 54;
+const byte GX = 55;
+const byte GJ = 56;
+
+const byte B = 57;
+const byte BL = 58;
+const byte BX = 59;
+const byte BJ = 60;
+
+const byte Y = 61;
 
 const byte i_lengths[] = {
   1,                    // Z
@@ -107,100 +114,234 @@ const byte i_lengths[] = {
   3, 3, 2, 3,           // A
   3, 3, 2, 3,           // M
   3, 3, 2, 3,           // DV
+  3, 3, 2, 3,           // DM
   3, 3, 2, 3,           // L
+  3, 3, 2, 3,           // I
+  3, 3, 2, 3, 1,        // U
   3, 3, 2, 3, 1,        // W
-  4, 4, 4,              // P
+  4, 1, 4, 4, 4,        // P
   4, 4, 4,              // Q
-  3, 3, 2, 3,           // R
-  3, 3, 2, 3,           // G
-  3, 3, 2, 3,           // B
+  2, 2, 1, 2,           // R
+  2, 2, 1, 2,           // G
+  2, 2, 1, 2,           // B
   1,                    // Y
 };
 
 
-byte instructions[256] = {
-    LL, R_V, 8,
-    L, 0, R_R,
-    L, 1, R_R,
-    L, 2, R_R,
-    Y,
-    LL, R_L, 0,
-    W, R_L, R_N,
-      L, 10, 0,
-      A, 10, R_F,
-      ML, 10, 10,
-      L, 10, R_P,
-      L, 11, 1,
-      A, 11, R_F,
-      ML, 11, 10,
-      L, 11, R_P,
-      L, 12, 2,
-      A, 12, R_F,
-      ML, 12, 10,
-      L, 12, R_P,
-      P, 10, 11, 12,
-      IC, R_L,
-    E,
-    Z};
+byte instructions[512] = {
+  LL, R_D, 5,
+  LL, 0, 25,  // spaceship 0
+  LL, 1, 125, // spaceship 1
+  LL, 2, 0,   // spaceship 0 direction
+  LL, 3, 1,   // spaceship 1 direction
+  LL, R_V, 50, // random numbers 0-49
+  Y,
+  L, R_L, R_N,
+  W, R_L, R_Z,
+    DC, R_L,
+    L, 20, R_R,
+    DML, 20, 4,
+    AL, 20, 12,
+    IL, 30, 0,
+      P, R_Z, 20, R_Z,
+    EI,
+    IL, 30, 1,
+      P, 20, 20, R_Z,
+    EI,
+    IL, 30, 2,
+      P, 20, R_Z, R_Z,
+    EI,
+    IL, 30, 3,
+      P, 20, R_Z, 20,
+    EI,
+    IL, 30, 4,
+      P, R_Z, R_Z, 20,
+    EI,
+    IL, 30, 5,
+      P, R_Z, 20, 20,
+    EI,
+    L, 10, 0,
+    IC, 10,
+    DM, 10, R_N,
+    I, R_L, 10,
+      PL, 64, 0, 64,
+    EI,
+    L, 10, 0,
+    DC, 10,
+    DM, 10, R_N,
+    I, R_L, 10,
+      PL, 64, 0, 64,
+    EI,
+    L, 11, 1,
+    DC, 11,
+    DM, 11, R_N,
+    I, R_L, 11,
+      PL, 64, 0, 64,
+    EI,
+    L, 11, 1,
+    IC, 11,
+    DM, 11, R_N,
+    I, R_L, 11,
+      PL, 64, 0, 64,
+    EI,
+    I, R_L, 0,
+      PL, 128, 0, 0,
+    EI,
+    I, R_L, 1,
+      PL, 128, 0, 0,
+    EI,
+    I, 1, 0,
+      PL, 128, 128, 128,
+    EI,
+  EW,
+  I, 1, 0,
+    IC, 30,
+    DML, 30, 6,
+  EI,
+  IL, R_R, 0,
+    IC, 2,
+    DML, 2, 2,
+  EI,
+  IL, 2, 0,
+    IC, 0,
+  EI,
+  IL, 2, 1,
+    DC, 0,
+  EI,
+  DM, 0, R_N,
+  IL, R_R, 0,
+    IC, 3,
+    DML, 3, 2,
+  EI,
+  IL, 3, 0,
+    IC, 1,
+  EI,
+  IL, 3, 1,
+    DC, 1,
+  EI,
+  DM, 1, R_N,
+  Z
+};
 
-void setup() {
-  // Initialize FastLED
-
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-
-  // Initialize IP, SP, and program storage.
-  
+void init_env() {
   iptr = 0;
   yptr = 0;
   sptr = 0;
   do {
     registers[iptr] = 0;
     scratchpad[iptr] = 0;
-  } while (iptr++ != 0); 
-   
+  } while (iptr++ != 256);
   init_system();
   init_frame();
-  
-  delay(1000);
+}
+
+void setup() {
+  // Initialize FastLED
+
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+
+  init_env();
+  run_program = true;
+
+  Serial.begin(9600);
+  while (! Serial); // Wait until Serial is ready - Leonardo
+  Serial.println("LIPS");
+  dump_program();
+}
+
+void dump_program() {
+  Serial.print("Z");
+  for (int x = 0; x < 230; x++) {
+    if ((x % 16) == 0) Serial.println();
+    Serial.print(instructions[x] / 100);
+    Serial.print((instructions[x] / 10) % 10);
+    Serial.print(instructions[x] % 10);
+  }
+  Serial.println("999");
 }
 
 void ins(byte data, int ms) {
-  for (int x=0; x<8; x++) {
+  for (int x = 0; x < 8; x++) {
     leds[x] = bitRead(data, x) ? CRGB::Red : CRGB::Black;
   }
   FastLED.show();
   delay(ms);
-  for (int x=0; x<8; x++) { leds[x] = CRGB::Black; }
+  for (int x = 0; x < 8; x++) {
+    leds[x] = CRGB::Black;
+  }
   FastLED.show();
 }
 
 void param(byte data, int ms) {
-  for (int x=0; x<8; x++) {
+  for (int x = 0; x < 8; x++) {
     leds[x] = bitRead(data, x) ? CRGB::Green : CRGB::Black;
   }
   FastLED.show();
   delay(ms);
-  for (int x=0; x<8; x++) { leds[x] = CRGB::Black; }
-  FastLED.show();  
+  for (int x = 0; x < 8; x++) {
+    leds[x] = CRGB::Black;
+  }
+  FastLED.show();
+}
+
+void check_for_input() {
+  if (Serial.available() > 0) {
+    if (run_program) {
+      byte incomingByte = Serial.read();
+      if (incomingByte == 'Z') {
+        run_program = false;
+        lptr = 0;
+      }
+    }
+    else if (Serial.available() > 2) {
+      byte digit1 = Serial.read() - 48;
+      byte digit2 = Serial.read() - 48;
+      byte digit3 = Serial.read() - 48;
+
+      if (digit1 == 9 && digit2 == 9 && digit3 == 9) {
+        dump_program();
+        init_env();
+        run_program = true;
+      }
+      else {
+        instructions[lptr] = digit1 * 100 + digit2 * 10 + digit3;
+        lptr++;
+      }
+    }
+  }
 }
 
 void loop() {
-  byte instruction;
-  
+  check_for_input();
+  if (run_program) { main_interpreter_loop(); }
+}
+
+void main_interpreter_loop() {
   iptr = yptr;
-  sptr = 0 ;
+  sptr = 0;
+  load_instruction();
+  bool debug = false;
+  bool term = false;
+
   do {
-    instruction = instructions[iptr];
-    // debug: ins(instruction, 500);
+    //ins(instruction, 1500);
     switch (instruction) {
-      case IC:  inc_reg(); break;
-      case ICX: inc_scr(); break;
-      case ICJ: inc_idx(); break;
-      case DC:  dec_reg(); break;
+      case IC:
+        if (debug) { Serial.println("IC"); }
+        inc_reg(); break;
+      case ICX:
+        inc_scr(); break;
+      case ICJ:
+        inc_idx(); break;
+      case DC:
+        if (debug) { Serial.println("DC"); }
+        dec_reg(); break;
       case DCX: dec_scr(); break;
       case DCJ: dec_idx(); break;
       case A:  add_reg(); break;
-      case AL: add_lit(); break;
+      case AL:
+        if (debug) { Serial.println("AL"); }
+        add_lit(); break;
       case AX: add_scr(); break;
       case AJ: add_idx(); break;
       case M:  mult_reg(); break;
@@ -211,18 +352,47 @@ void loop() {
       case DVL: div_lit(); break;
       case DVX: div_scr(); break;
       case DVJ: div_idx(); break;
-      case L:  load_reg(); break;
-      case LL: load_lit(); break;
+      case DM:
+        if (debug) { Serial.println("DM"); }
+        mod_reg(); break;
+      case DML:
+        if (debug) { Serial.println("DML"); }
+        mod_lit(); break;
+      case DMX: //mod_scr(); break;
+      case DMJ: //mod_idx(); break;
+      case L:
+        if (debug) { Serial.println("L"); }
+        load_reg(); break;
+      case LL:
+        if (debug) { Serial.println("LL"); }
+        load_lit(); break;
       case LX: load_scr(); break;
       case LJ: load_idx(); break;
-      case W:  while_reg(); break;
+      case I:  if_reg(); break;
+      case IL: if_lit(); break;
+      case IX: //if_scr(); break;
+      case IJ: //if_idx(); break;
+      case U:  //unless_reg(); break;
+      case UL: //unless_lit(); break;
+      case UX: //unless_scr(); break;
+      case UJ: //unless_idx(); break;
+      case EI: end_if(); break;
+      case W:
+        if (debug) { Serial.println("W"); }
+        while_reg(); break;
       case WL: while_lit(); break;
       case WX: while_scr(); break;
       case WJ: while_idx(); break;
-      case E:  end_while(); break;
-      case P:  pixel_reg(); break;
+      case EW:
+        if (debug) { Serial.println("EW"); }
+        end_while(); break;
+      case P:
+        if (debug) { Serial.println("P"); }
+        pixel_reg(); break;
+      case PB: pixel_blk(); break;
       case PL: pixel_lit(); break;
       case PJ: pixel_idx(); break;
+      case PH: pixel_hsv_reg(); break;
       case Q:  pixel_add_reg(); break;
       case QL: pixel_add_lit(); break;
       case QJ: pixel_add_idx(); break;
@@ -238,22 +408,28 @@ void loop() {
       case BL: pixel_blue_lit(); break;
       case BX: pixel_blue_scr(); break;
       case BJ: pixel_blue_idx(); break;
-      case Y:  set_yptr(); break;
-      default: terminate_frame(); break;   // Includes Z instruction and any unknown instruction.
+      case Y:
+        if (debug) { Serial.println("Y"); }
+        set_yptr(); break;
+      default:
+        if (debug) { Serial.println("Z"); }
+        terminate_frame(); term = true; break;   // Includes Z instruction and any unknown instruction.
     }
-  } while (instruction != Z);
+    //delay(250);
+  } while (!term);
 
   advance_frame();
-  delay(5); // possible frame speed adjustment could go here
+  delay(registers[R_D]); // Wait in milliseconds, after frame termination (display)
 }
 
 /*
-** Register management 
+** Register management
 */
 
 void init_frame() {
   registers[R_F] = 0;
   registers[R_O] = 16;
+  registers[R_D] = 50;
 }
 
 void advance_frame() {
@@ -262,7 +438,9 @@ void advance_frame() {
 }
 
 void check_frame_overflow() {
-  if (registers[R_F] >= registers[R_O]) { registers[R_F] = 0; }
+  if (registers[R_F] >= registers[R_O]) {
+    registers[R_F] = 0;
+  }
 }
 
 void init_system() {
@@ -307,6 +485,17 @@ void push_ip() {
 
 void pop_ip() {
   iptr = stack[--sptr];
+  load_instruction();
+}
+
+void next_ip() {
+  iptr += instruction_length;
+  load_instruction();
+}
+
+void load_instruction() {
+  instruction = instructions[iptr];
+  instruction_length = i_lengths[instruction];
 }
 
 /* Instruction implementations (render)
@@ -322,190 +511,250 @@ void terminate_frame() {
 */
 
 void inc_reg() {
-  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) + 1);
-  iptr += i_lengths[I];
+  reg_write(instructions[iptr + 1], reg_read(instructions[iptr + 1]) + 1);
+  next_ip();
 }
 
 void inc_scr() {
   reg_write(R_X, reg_read(R_X) + 1);
-  iptr += i_lengths[IX];
+  next_ip();
 }
 
 void inc_idx() {
-  scratchpad[instructions[iptr+1]] += 1;
-  iptr += i_lengths[IJ];
+  scratchpad[instructions[iptr + 1]] += 1;
+  next_ip();
 }
 
 void dec_reg() {
-  reg_write(instructions[iptr+1], reg_read(instructions[iptr+1]) - 1);
-  iptr += i_lengths[D];
+  reg_write(instructions[iptr + 1], reg_read(instructions[iptr + 1]) - 1);
+  next_ip();
 }
 
 void dec_scr() {
   reg_write(R_X, reg_read(R_X) - 1);
-  iptr += i_lengths[DX];
+  next_ip();
 }
 
 void dec_idx() {
-  scratchpad[instructions[iptr+1]] -= 1;
-  iptr += i_lengths[DJ];
+  scratchpad[instructions[iptr + 1]] -= 1;
+  next_ip();
 }
 
 void add_reg() {
-  byte basis = reg_read(instructions[iptr+1]);
-  reg_write(instructions[iptr+1], basis + reg_read(instructions[iptr+2]));
-  iptr += i_lengths[A];
+  byte basis = reg_read(instructions[iptr + 1]);
+  reg_write(instructions[iptr + 1], basis + reg_read(instructions[iptr + 2]));
+  next_ip();
 }
 
 void add_lit() {
-  byte basis = reg_read(instructions[iptr+1]);
-  reg_write(instructions[iptr+1], basis + instructions[iptr+2]);
-  iptr += i_lengths[AL];
+  byte basis = reg_read(instructions[iptr + 1]);
+  reg_write(instructions[iptr + 1], basis + instructions[iptr + 2]);
+  next_ip();
 }
 
 void add_scr() {
-  byte basis = reg_read(instructions[iptr+1]);
-  reg_write(instructions[iptr+1], basis + reg_read(R_X));
-  iptr += i_lengths[AX];
+  byte basis = reg_read(instructions[iptr + 1]);
+  reg_write(instructions[iptr + 1], basis + reg_read(R_X));
+  next_ip();
 }
 
 void add_idx() {
-  byte basis = reg_read(instructions[iptr+1]);
-  reg_write(instructions[iptr+1], basis + scratchpad[instructions[iptr+2]]);
-  iptr += i_lengths[AJ];
+  byte basis = reg_read(instructions[iptr + 1]);
+  reg_write(instructions[iptr + 1], basis + scratchpad[instructions[iptr + 2]]);
+  next_ip();
 }
 
 void mult_reg() {
-  word product = reg_read(instructions[iptr+1]) * reg_read(instructions[iptr+2]);
+  word product = reg_read(instructions[iptr + 1]) * reg_read(instructions[iptr + 2]);
   reg_write(R_P, lowByte(product));
   reg_write(R_Q, highByte(product));
-  iptr += i_lengths[M];
+  next_ip();
 }
 
 void mult_lit() {
-  word product = reg_read(instructions[iptr+1]) * instructions[iptr+2];
+  word product = reg_read(instructions[iptr + 1]) * instructions[iptr + 2];
   reg_write(R_P, lowByte(product));
   reg_write(R_Q, highByte(product));
-  iptr += i_lengths[ML];
+  next_ip();
 }
 
 void mult_scr() {
-  word product = reg_read(instructions[iptr+1]) * reg_read(R_X);
+  word product = reg_read(instructions[iptr + 1]) * reg_read(R_X);
   reg_write(R_P, lowByte(product));
   reg_write(R_Q, highByte(product));
-  iptr += i_lengths[MX];
+  next_ip();
 }
 
 void mult_idx() {
-  word product = reg_read(instructions[iptr+1]) * scratchpad[instructions[iptr+2]];
+  word product = reg_read(instructions[iptr + 1]) * scratchpad[instructions[iptr + 2]];
   reg_write(R_P, lowByte(product));
   reg_write(R_Q, highByte(product));
-  iptr += i_lengths[MJ];
+  next_ip();
 }
 
 void div_reg() {
-  byte basis = reg_read(instructions[iptr+1]);
-  byte divisor = reg_read(instructions[iptr+2]);
+  byte basis = reg_read(instructions[iptr + 1]);
+  byte divisor = reg_read(instructions[iptr + 2]);
   reg_write(R_P, basis % divisor);
   reg_write(R_Q, basis / divisor);
+  next_ip();
 }
 
 void div_lit() {
-  byte basis = reg_read(instructions[iptr+1]);
-  byte divisor = instructions[iptr+1];
+  byte basis = reg_read(instructions[iptr + 1]);
+  byte divisor = instructions[iptr + 2];
   reg_write(R_P, basis % divisor);
   reg_write(R_Q, basis / divisor);
+  next_ip();
 }
 
 void div_scr() {
-  byte basis = reg_read(instructions[iptr+1]);
+  byte basis = reg_read(instructions[iptr + 1]);
   byte divisor = reg_read(R_X);
   reg_write(R_P, basis % divisor);
   reg_write(R_Q, basis / divisor);
+  next_ip();
 }
 
 void div_idx() {
-  byte basis = reg_read(instructions[iptr+1]);
-  byte divisor = scratchpad[instructions[iptr+2]];
+  byte basis = reg_read(instructions[iptr + 1]);
+  byte divisor = scratchpad[instructions[iptr + 2]];
   reg_write(R_P, basis % divisor);
   reg_write(R_Q, basis / divisor);
+  next_ip();
+}
+
+void mod_reg() {
+  byte basis = reg_read(instructions[iptr + 1]);
+  byte divisor = reg_read(instructions[iptr + 2]);
+  reg_write(instructions[iptr + 1], basis % divisor);
+  next_ip();
+}
+
+void mod_lit() {
+  byte basis = reg_read(instructions[iptr + 1]);
+  byte divisor = instructions[iptr + 2];
+  reg_write(instructions[iptr + 1], basis % divisor);
+  next_ip();
 }
 
 void load_reg() {
-  reg_write(instructions[iptr+1], reg_read(instructions[iptr+2]));
-  iptr += i_lengths[L];
+  reg_write(instructions[iptr + 1], reg_read(instructions[iptr + 2]));
+  next_ip();
 }
 
 void load_lit() {
-  reg_write(instructions[iptr+1], instructions[iptr+2]);
-  iptr += i_lengths[LL];
+  reg_write(instructions[iptr + 1], instructions[iptr + 2]);
+  next_ip();
 }
 
 void load_scr() {
-  reg_write(instructions[iptr+1], reg_read(R_X));
-  iptr += i_lengths[LX];
+  reg_write(instructions[iptr + 1], reg_read(R_X));
+  next_ip();
 }
 
 void load_idx() {
-  reg_write(instructions[iptr+1], scratchpad[instructions[iptr+2]]);
-  iptr += i_lengths[LJ];
+  reg_write(instructions[iptr + 1], scratchpad[instructions[iptr + 2]]);
+  next_ip();
 }
 
 /*
-** Instruction implementations (loop)
+** Instruction implementations (conditionals and looping)
 */
 
-void skip_while() {
+void skip_past_ei() {
   byte nest_ct = 0;
   do {
-    switch (instructions[iptr]) {
+    switch(instruction) {
+      case I: nest_ct++; break;
+      case IL: nest_ct++; break;
+      case EI: nest_ct--; break;
+    }
+    next_ip();
+  } while (nest_ct > 0);
+}
+
+void skip_past_ew() {
+  byte nest_ct = 0;
+  do {
+    switch (instruction) {
       case W: nest_ct++; break;
       case WL: nest_ct++; break;
       case WX: nest_ct++; break;
       case WJ: nest_ct++; break;
-      case E: nest_ct--; break;
+      case EW: nest_ct--; break;
     }
-    iptr += i_lengths[instructions[iptr]];
+    next_ip();
   } while (nest_ct > 0);
 }
 
+void if_reg() {
+  if (reg_read(instructions[iptr + 1]) == reg_read(instructions[iptr + 2])) {
+    next_ip();
+  }
+  else {
+    skip_past_ei();
+  }
+}
+
+void if_lit() {
+  if (reg_read(instructions[iptr + 1]) == instructions[iptr + 2]) {
+    next_ip();
+  }
+  else {
+    skip_past_ei();
+  }
+}
+void if_less_reg() {
+  if (reg_read(instructions[iptr + 1]) < reg_read(instructions[iptr + 2])) {
+    next_ip();
+  }
+  else {
+    skip_past_ei();
+  }
+}
+
+void end_if() {
+  next_ip();
+}
+
 void while_reg() {
-  if (reg_read(instructions[iptr+1]) == reg_read(instructions[iptr+2])) {
-    skip_while();
+  if (reg_read(instructions[iptr + 1]) == reg_read(instructions[iptr + 2])) {
+    skip_past_ew();
   }
   else {
     push_ip();
-    iptr += i_lengths[W];
+    next_ip();
   }
 }
 
 void while_lit() {
-  if (reg_read(instructions[iptr+1]) == instructions[iptr+2]) {
-    skip_while();
+  if (reg_read(instructions[iptr + 1]) == instructions[iptr + 2]) {
+    skip_past_ew();
   }
   else {
     push_ip();
-    iptr += i_lengths[WL];
+    next_ip();
   }
 }
 
 void while_scr() {
-  if (reg_read(instructions[iptr+1]) == reg_read(R_X)) {
-    skip_while();
+  if (reg_read(instructions[iptr + 1]) == reg_read(R_X)) {
+    skip_past_ew();
   }
   else {
     push_ip();
-    iptr += i_lengths[WX];
+    next_ip();
   }
 }
 
 void while_idx() {
-  if (reg_read(instructions[iptr+1]) == scratchpad[instructions[iptr+2]]) {
-    skip_while();
+  if (reg_read(instructions[iptr + 1]) == scratchpad[instructions[iptr + 2]]) {
+    skip_past_ew();
   }
   else {
     push_ip();
-    iptr += i_lengths[WJ];
+    next_ip();
   }
 }
 
@@ -519,50 +768,64 @@ void end_while() {
 
 void pixel_reg() {
   leds[reg_read(R_L)].setRGB(
-    reg_read(instructions[iptr+1]),
-    reg_read(instructions[iptr+2]),
-    reg_read(instructions[iptr+3])
+    reg_read(instructions[iptr + 1]),
+    reg_read(instructions[iptr + 2]),
+    reg_read(instructions[iptr + 3])
   );
-  iptr += i_lengths[P];
+  next_ip();
+}
+
+void pixel_blk() {
+  leds[reg_read(R_L)].setRGB(0, 0, 0);
+  next_ip();
 }
 
 void pixel_lit() {
   leds[reg_read(R_L)].setRGB(
-    instructions[iptr+1],
-    instructions[iptr+2],
-    instructions[iptr+3]
+    instructions[iptr + 1],
+    instructions[iptr + 2],
+    instructions[iptr + 3]
   );
-  iptr += i_lengths[PL];
+  next_ip();
 }
 
 void pixel_idx() {
   leds[reg_read(R_L)].setRGB(
-    scratchpad[instructions[iptr+1]],
-    scratchpad[instructions[iptr+2]],
-    scratchpad[instructions[iptr+3]]
+    scratchpad[instructions[iptr + 1]],
+    scratchpad[instructions[iptr + 2]],
+    scratchpad[instructions[iptr + 3]]
   );
-  iptr += i_lengths[PJ];
+  next_ip();
+}
+
+void pixel_hsv_reg() {
+  leds[reg_read(R_L)].setHSV(
+    reg_read(instructions[iptr + 1]),
+    reg_read(instructions[iptr + 2]),
+    reg_read(instructions[iptr + 3])
+  );
+  next_ip();
 }
 
 void pixel_add_reg() {
   // red_delta = reg_read(instructions[iptr+1]);
   // green_delta = reg_read(instructions[iptr+2]);
   // blue_delta = reg_read(instructions[iptr+3]);
-  iptr += i_lengths[Q];
+  next_ip();
 }
 
 void pixel_add_lit() {
   // red_delta = instructions[iptr+1];
   // green_delta = instructions[iptr+2];
   // blue_delta = instructions[iptr+3];
-  iptr += i_lengths[QL];
+  next_ip();
 }
 
 void pixel_add_idx() {
   // red_delta = scratchpad[instructions[iptr+1]];
   // green_delta = scratchpad[instructions[iptr+2]];
   // blue_delta = scratchpad[instructions[iptr+3]];
-  iptr += i_lengths[QJ];
+  next_ip();
 }
 
 /*
@@ -570,23 +833,23 @@ void pixel_add_idx() {
 */
 
 void pixel_red_reg() {
-  leds[reg_read(R_L)].r = reg_read(instructions[iptr+1]);
-  iptr += i_lengths[R];
+  leds[reg_read(R_L)].r = reg_read(instructions[iptr + 1]);
+  next_ip();
 }
 
 void pixel_red_lit() {
-  leds[reg_read(R_L)].r = instructions[iptr+1];
-  iptr += i_lengths[RL];
+  leds[reg_read(R_L)].r = instructions[iptr + 1];
+  next_ip();
 }
 
 void pixel_red_scr() {
   leds[reg_read(R_L)].r = reg_read(R_X);
-  iptr += i_lengths[RX];
+  next_ip();
 }
 
 void pixel_red_idx() {
-  leds[reg_read(R_L)].r = scratchpad[instructions[iptr+1]];
-  iptr += i_lengths[RJ];
+  leds[reg_read(R_L)].r = scratchpad[instructions[iptr + 1]];
+  next_ip();
 }
 
 /*
@@ -594,23 +857,23 @@ void pixel_red_idx() {
 */
 
 void pixel_green_reg() {
-  leds[reg_read(R_L)].g = reg_read(instructions[iptr+1]);
-  iptr += i_lengths[G];
+  leds[reg_read(R_L)].g = reg_read(instructions[iptr + 1]);
+  next_ip();
 }
 
 void pixel_green_lit() {
-  leds[reg_read(R_L)].g = instructions[iptr+1];
-  iptr += i_lengths[GL];
+  leds[reg_read(R_L)].g = instructions[iptr + 1];
+  next_ip();
 }
 
 void pixel_green_scr() {
   leds[reg_read(R_L)].g = reg_read(R_X);
-  iptr += i_lengths[GX];
+  next_ip();
 }
 
 void pixel_green_idx() {
-  leds[reg_read(R_L)].g = scratchpad[instructions[iptr+1]];
-  iptr += i_lengths[GJ];
+  leds[reg_read(R_L)].g = scratchpad[instructions[iptr + 1]];
+  next_ip();
 }
 
 /*
@@ -618,23 +881,23 @@ void pixel_green_idx() {
 */
 
 void pixel_blue_reg() {
-  leds[reg_read(R_L)].b = reg_read(instructions[iptr+1]);
-  iptr += i_lengths[B];
+  leds[reg_read(R_L)].b = reg_read(instructions[iptr + 1]);
+  next_ip();
 }
 
 void pixel_blue_lit() {
-  leds[reg_read(R_L)].b = instructions[iptr+1];
-  iptr += i_lengths[BL];
+  leds[reg_read(R_L)].b = instructions[iptr + 1];
+  next_ip();
 }
 
 void pixel_blue_scr() {
   leds[reg_read(R_L)].b = reg_read(R_X);
-  iptr += i_lengths[BX];
+  next_ip();
 }
 
 void pixel_blue_idx() {
-  leds[reg_read(R_L)].b = scratchpad[instructions[iptr+1]];
-  iptr += i_lengths[BJ];
+  leds[reg_read(R_L)].b = scratchpad[instructions[iptr + 1]];
+  next_ip();
 }
 
 /*
@@ -642,6 +905,6 @@ void pixel_blue_idx() {
 */
 
 void set_yptr() {
-  yptr = iptr + i_lengths[Y];
-  iptr = yptr;
+  next_ip();
+  yptr = iptr;
 }
