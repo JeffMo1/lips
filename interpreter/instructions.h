@@ -38,17 +38,6 @@ const byte LL = 24;
 const byte LX = 25;
 const byte LJ = 26;
 
-const byte I = 27;
-const byte IL = 28;
-const byte IX = 29; // tbi
-const byte IJ = 30; // tbi
-
-const byte U = 31;  // tbi
-const byte UL = 32; // tbi
-const byte UX = 33; // tbi
-const byte UJ = 34; // tbi
-const byte EI = 35; // tbi
-
 const byte W = 36;
 const byte WL = 37;
 const byte WX = 38;
@@ -82,6 +71,19 @@ const byte BJ = 60;
 
 const byte Y = 61;
 
+const byte IF = 100;
+const byte IFL = 101;
+const byte IFJ = 102; // tbi
+
+const byte UN = 103; // tbi
+const byte UNL = 104; // tbi
+const byte UHJ = 105; // tbi
+
+const byte IFO = 106;
+const byte IFOL = 107;
+const byte IFOJ = 108; // tbi
+const byte EI = 109; // tbi
+
 const byte i_lengths[] = {
   1,                    // Z
   2, 1, 2,              // IC
@@ -91,8 +93,8 @@ const byte i_lengths[] = {
   3, 3, 2, 3,           // DV
   3, 3, 2, 3,           // DM
   3, 3, 2, 3,           // L
-  3, 3, 2, 3,           // I
-  3, 3, 2, 3, 1,        // U
+  0, 0, 0, 0,           // reserved
+  0, 0, 0, 0, 0,        // reserved
   3, 3, 2, 3, 1,        // W
   4, 1, 4, 4, 4,        // P
   4, 4, 4,              // Q
@@ -100,6 +102,18 @@ const byte i_lengths[] = {
   2, 2, 1, 2,           // G
   2, 2, 1, 2,           // B
   1,                    // Y
+  0, 0, 0, 0,           // 62-65
+  0, 0, 0, 0, 0,        // 66-70
+  0, 0, 0, 0, 0,        // 71-75
+  0, 0, 0, 0, 0,        // 76-80
+  0, 0, 0, 0, 0,        // 81-85
+  0, 0, 0, 0, 0,        // 86-90
+  0, 0, 0, 0, 0,        // 91-95
+  0, 0, 0, 0,           // 96-99
+  3, 3, 3,              // IF
+  3, 3, 3,              // UN
+  4, 4, 4,              // IFO
+  1,                    // EI
 };
 
 #endif
